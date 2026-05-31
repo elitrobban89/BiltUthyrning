@@ -33,17 +33,17 @@ public class DataInitializer {
                 Car car1 = Car.builder()
                     .model("Volvo XC40")
                     .year("2023")
-                    .engine("2.0L Turbo")
+                    .engine("B4 AWD")
                     .dailyRate(new BigDecimal("899.00"))
                     .build();
-                
+
                 Car car2 = Car.builder()
                     .model("Volvo S90")
                     .year("2023")
-                    .engine("2.0L Turbo")
+                    .engine("B5 AWD")
                     .dailyRate(new BigDecimal("1299.00"))
                     .build();
-                
+
                 Car car3 = Car.builder()
                     .model("Volvo V90")
                     .year("2022")
@@ -52,16 +52,40 @@ public class DataInitializer {
                     .build();
 
                 Car car4 = Car.builder()
-                        .model("Volvo XC90")
-                        .year("2025")
-                        .engine("1.5L B5")
-                        .dailyRate(new BigDecimal("1299.00"))
-                        .build();
-                
+                    .model("Volvo XC90")
+                    .year("2025")
+                    .engine("1.5L B5")
+                    .dailyRate(new BigDecimal("1499.00"))
+                    .build();
+
+                Car car5 = Car.builder()
+                    .model("Volvo EX60 P6")
+                    .year("2025")
+                    .engine("El — 300 kW")
+                    .dailyRate(new BigDecimal("1199.00"))
+                    .build();
+
+                Car car6 = Car.builder()
+                    .model("Volvo XC60 B4")
+                    .year("2024")
+                    .engine("2.0L B4 Mild Hybrid")
+                    .dailyRate(new BigDecimal("999.00"))
+                    .build();
+
+                Car car7 = Car.builder()
+                    .model("Volvo XC60 D5")
+                    .year("2022")
+                    .engine("2.0L D5 Diesel")
+                    .dailyRate(new BigDecimal("949.00"))
+                    .build();
+
                 carRepository.save(car1);
                 carRepository.save(car2);
                 carRepository.save(car3);
                 carRepository.save(car4);
+                carRepository.save(car5);
+                carRepository.save(car6);
+                carRepository.save(car7);
                 
                 Booking booking1 = new Booking();
                 booking1.setCar(car1);
