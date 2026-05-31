@@ -1,93 +1,85 @@
-# BiltUthyrning
-BilUthyrningssystem System Summary
+# BilUthyrning
+Biluthyrningssystem byggt med JavaFX och Spring Boot.
 
-## Changelog
+## Starta appen
+Kör `run.bat` i projektmappen. Kräver Java 21+ och JavaFX SDK (sökväg konfigureras i `run.bat`).
 
-### Login Feature (2026-05-31)
-- Added `User` JPA entity with username and SHA-256 hashed password
-- Added `UserRepository` (Spring Data JPA)
-- Added `UserService` with login validation and user registration (SHA-256 password hashing)
-- Added `LoginGUI` — a JavaFX login/register screen shown at app startup with two tabs (Login & Register)
-- `CarRentalGUI` now launches only after successful login
-- `DataInitializer` seeds a default admin user: **username:** `admin` / **password:** `admin123`
-- Fixed `.gitignore` to exclude `target/` and `*.db` files
-- Removed build artifacts and SQLite database file from version control
+Standardinloggning: **admin** / **admin123**
 
 ---
 
-Java Code Architecture
-Main Components:
+## Changelog
 
-CarRentalGUI.java - JavaFX application entry point, initializes Spring context and builds UI
-LoginGUI.java - Login and registration screen shown before the main UI
-Model Layer - JPA entities: Car, Booking, and User with proper relationships
-Service Layer - Business logic: CarService, BookingService, and UserService handle operations
-Repository Layer - Spring Data JPA repositories for database access
-API Layer - REST controllers: BookingController and CarController for HTTP endpoints
-DataInitializer - CommandLineRunner that populates initial data
-Key Features:
+### GUI-redesign & nya bilar (2026-05-31)
+- Omdesignad UI med modernt blått tema (Volvo-inspirerat)
+- Varje bil i listan visas nu med en JavaFX Canvas-ritad sidoprofil anpassad per biltyp:
+  - SUV-profil för XC40, XC60 och EX60
+  - Stor SUV-profil för XC90
+  - Sedanprofil för S90
+  - Kombiprofil för V90
+- EX60 visas med grön färg och "EV ⚡"-badge
+- Bokningslistan är nu en TableView (rad-markering för avbokning, inte manuellt ID)
+- Inloggningsfönstret har fått blå banner och renare layout
+- Lade till tre nya bilar i flottan:
+  - **Volvo EX60 P6** (2025) — El 300 kW — 1 199 kr/dag
+  - **Volvo XC60 B4** (2024) — 2.0L B4 Mild Hybrid — 999 kr/dag
+  - **Volvo XC60 D5** (2022) — 2.0L D5 Diesel — 949 kr/dag
+- Uppdaterade motorbeteckningar till Volvos nuvarande namnstandard (B4 AWD, B5 AWD)
+- Appnamnet rättat till **BilUthyrning**
 
-User authentication (login and registration with SHA-256 password hashing)
-Car selection with pricing calculation
-Booking creation with date validation
-Booking cancellation
-Conflict detection for overlapping bookings
-Price calculation based on daily rates and rental duration
-Database Connection
-Technology Stack:
+### Inloggningsfunktion (2026-05-31)
+- Lade till `User` JPA-entitet med användarnamn och SHA-256-hashat lösenord
+- Lade till `UserRepository` (Spring Data JPA)
+- Lade till `UserService` med inloggningsvalidering och registrering
+- Lade till `LoginGUI` — inloggnings-/registreringsskärm med två flikar
+- `CarRentalGUI` startar nu endast efter lyckad inloggning
+- `DataInitializer` skapar standardanvändare: **admin** / **admin123**
 
-Database: SQLite (file-based, lightweight)
-ORM: Hibernate/JPA with Spring Data JPA
-Dialect: org.hibernate.community.dialect.SQLiteDialect
-Connection: JDBC via sqlite-jdbc driver
-Configuration (application.properties):
+---
 
-spring.datasource.url=jdbc:sqlite:biltuthyrning.db
-spring.datasource.driver-class-name=org.sqlite.JDBC
-spring.jpa.database-platform=org.hibernate.community.dialect.SQLiteDialect
-spring.jpa.hibernate.ddl-auto=update
-Schema:
+## Bilflotta
 
-cars table: id, model, year, engine, daily_rate
-bookings table: id, car_id, customer_name, start_date, end_date, total_price, status
-Foreign key relationship: bookings.car_id → cars.id
-SQLite-Specific Configurations:
+| Modell | År | Motor | Pris/dag |
+|---|---|---|---|
+| Volvo XC40 | 2023 | B4 AWD | 899 kr |
+| Volvo XC60 B4 | 2024 | 2.0L B4 Mild Hybrid | 999 kr |
+| Volvo XC60 D5 | 2022 | 2.0L D5 Diesel | 949 kr |
+| Volvo XC90 | 2025 | 1.5L B5 | 1 499 kr |
+| Volvo EX60 P6 | 2025 | El — 300 kW | 1 199 kr |
+| Volvo S90 | 2023 | B5 AWD | 1 299 kr |
+| Volvo V90 | 2022 | 2.0L B4 | 1 099 kr |
 
-Disabled batching and fetch optimization
-Disabled getGeneratedKeys (workaround for SQLite limitations)
-Used IDENTITY strategy for auto-increment IDs
-Modern REST Services
-REST API Endpoints (BookingController):
+---
 
-GET /api/bookings
+## Arkitektur
 
-Returns all bookings
-GET /api/bookings/{id}
+| Lager | Klasser |
+|---|---|
+| GUI | `CarRentalGUI`, `LoginGUI` |
+| Tjänster | `CarService`, `BookingService`, `UserService` |
+| Modell | `Car`, `Booking`, `User` |
+| Repository | `CarRepository`, `BookingRepository`, `UserRepository` |
+| REST API | `CarController`, `BookingController` |
+| Initiering | `DataInitializer`, `BiltUthyrningApplication` |
 
-Returns specific booking by ID
-POST /api/bookings
+## Teknikstack
+- **Java 21** / **JavaFX 21**
+- **Spring Boot 3.x** (Web, Data JPA)
+- **SQLite** via `sqlite-jdbc` + Hibernate Community Dialects
+- **Maven** för bygge och beroenden
 
-Creates new booking
-Request body: BookingRequest with carId, customerName, startDate, endDate
-Returns created booking
-DELETE /api/bookings/{id}
+## REST API
 
-Cancels booking by ID
-GET /api/bookings/cars/{carId}/availability
+| Metod | Endpoint | Beskrivning |
+|---|---|---|
+| GET | `/api/bookings` | Hämta alla bokningar |
+| GET | `/api/bookings/{id}` | Hämta bokning |
+| POST | `/api/bookings` | Skapa bokning |
+| DELETE | `/api/bookings/{id}` | Avboka |
+| GET | `/api/bookings/cars/{carId}/availability` | Kontrollera tillgänglighet |
+| GET | `/api/cars` | Hämta alla bilar |
 
-Checks car availability for date range
-Query params: start, end (ISO date format)
-Returns JSON with availability status
-Modern Features:
-
-Spring Boot 3.x with Jakarta EE
-RESTful API design
-JSON serialization/deserialization
-Date formatting with ISO standards
-Exception handling with proper HTTP status codes
-Integration:
-
-GUI uses service layer directly
-REST API provides alternative access for web/mobile clients
-Both share same business logic and data access layers
-This is a modern, layered architecture following Spring Boot best practices with separation of concerns and multiple access patterns (GUI + REST API).
+## Databas
+- Fil: `biltuthyrning.db` (SQLite, skapas automatiskt vid start)
+- Tabeller: `cars`, `bookings`, `users`
+- `spring.jpa.hibernate.ddl-auto=update` — schemat uppdateras automatiskt
