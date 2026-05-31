@@ -2,8 +2,11 @@ package com.biltuthyrning;
 
 import com.biltuthyrning.model.Car;
 import com.biltuthyrning.model.Booking;
+import com.biltuthyrning.model.User;
 import com.biltuthyrning.repository.CarRepository;
 import com.biltuthyrning.repository.BookingRepository;
+import com.biltuthyrning.repository.UserRepository;
+import com.biltuthyrning.service.UserService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,10 +16,19 @@ import java.time.LocalDate;
 
 @Configuration
 public class DataInitializer {
-    
+
     @Bean
-    public CommandLineRunner initializeData(CarRepository carRepository, BookingRepository bookingRepository) {
+    public CommandLineRunner initializeData(CarRepository carRepository, BookingRepository bookingRepository,
+                                            UserRepository userRepository, UserService userService) {
         return args -> {
+            if (userRepository.count() == 0) {
+                User admin = new User();
+                admin.setUsername("admin");
+                admin.setPassword(userService.hashPassword("admin123"));
+                admin.setRole("ADMIN");
+                userRepository.save(admin);
+            }
+
             if (carRepository.count() == 0) {
                 Car car1 = Car.builder()
                     .model("Volvo XC40")

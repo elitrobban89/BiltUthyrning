@@ -27,4 +27,10 @@ bin/
 .vscode/
 
 ### Mac OS ###
-.DS_Store"target/" 
+.DS_Store
+
+### Build output ###
+target/
+
+### Database ###
+*.db

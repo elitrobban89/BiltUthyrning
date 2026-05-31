@@ -3,9 +3,12 @@ package com.biltuthyrning.gui;
 import com.biltuthyrning.BiltUthyrningApplication;
 import com.biltuthyrning.model.Car;
 import com.biltuthyrning.model.Booking;
+import com.biltuthyrning.model.User;
 import com.biltuthyrning.service.CarService;
 import com.biltuthyrning.service.BookingService;
+import com.biltuthyrning.service.UserService;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -22,11 +25,13 @@ import java.util.List;
 import java.util.UUID;
 
 public class CarRentalGUI extends Application {
-    
+
     private static ConfigurableApplicationContext springContext;
-    
+
     private CarService carService;
     private BookingService bookingService;
+    private UserService userService;
+    private User loggedInUser;
     private ComboBox<Car> carComboBox;
     private DatePicker startDatePicker;
     private DatePicker endDatePicker;
@@ -44,21 +49,26 @@ public class CarRentalGUI extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         initializeServices();
-        
+
+        LoginGUI loginGUI = new LoginGUI(userService);
+        loggedInUser = loginGUI.showAndWait();
+
+        if (loggedInUser == null) {
+            Platform.exit();
+            return;
+        }
+
         BorderPane root = new BorderPane();
         root.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-size: 11;");
-        
-        // Menu bar
+
         root.setTop(createMenuBar(primaryStage));
-        
-        // Main content
         root.setCenter(createMainContent());
-        
+
         Scene scene = new Scene(root, 900, 600);
-        primaryStage.setTitle("BiltUthyrning - Biluthyrningssystem");
+        primaryStage.setTitle("BiltUthyrning - Inloggad som: " + loggedInUser.getUsername());
         primaryStage.setScene(scene);
         primaryStage.show();
-        
+
         loadCars();
     }
     
@@ -73,6 +83,7 @@ public class CarRentalGUI extends Application {
         try {
             carService = springContext.getBean(CarService.class);
             bookingService = springContext.getBean(BookingService.class);
+            userService = springContext.getBean(UserService.class);
         } catch (Exception e) {
             System.err.println("Could not load Spring services: " + e.getMessage());
             e.printStackTrace();
@@ -81,12 +92,19 @@ public class CarRentalGUI extends Application {
     
     private MenuBar createMenuBar(Stage stage) {
         MenuBar menuBar = new MenuBar();
-        
-        Menu fileMenu = new Menu("File");
-        MenuItem exitItem = new MenuItem("Exit");
+
+        Menu fileMenu = new Menu("Arkiv");
+
+        MenuItem logoutItem = new MenuItem("Logga ut");
+        logoutItem.setOnAction(e -> {
+            stage.close();
+            Platform.exit();
+        });
+
+        MenuItem exitItem = new MenuItem("Avsluta");
         exitItem.setOnAction(e -> stage.close());
-        fileMenu.getItems().add(exitItem);
-        
+
+        fileMenu.getItems().addAll(logoutItem, new SeparatorMenuItem(), exitItem);
         menuBar.getMenus().add(fileMenu);
         return menuBar;
     }
