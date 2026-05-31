@@ -1,16 +1,33 @@
-# BilUthyrning
+# BiltUthyrning
 BilUthyrningssystem System Summary
+
+## Changelog
+
+### Login Feature (2026-05-31)
+- Added `User` JPA entity with username and SHA-256 hashed password
+- Added `UserRepository` (Spring Data JPA)
+- Added `UserService` with login validation and user registration (SHA-256 password hashing)
+- Added `LoginGUI` — a JavaFX login/register screen shown at app startup with two tabs (Login & Register)
+- `CarRentalGUI` now launches only after successful login
+- `DataInitializer` seeds a default admin user: **username:** `admin` / **password:** `admin123`
+- Fixed `.gitignore` to exclude `target/` and `*.db` files
+- Removed build artifacts and SQLite database file from version control
+
+---
+
 Java Code Architecture
 Main Components:
 
 CarRentalGUI.java - JavaFX application entry point, initializes Spring context and builds UI
-Model Layer - JPA entities: Car and Booking with proper relationships
-Service Layer - Business logic: CarService and BookingService handle operations
+LoginGUI.java - Login and registration screen shown before the main UI
+Model Layer - JPA entities: Car, Booking, and User with proper relationships
+Service Layer - Business logic: CarService, BookingService, and UserService handle operations
 Repository Layer - Spring Data JPA repositories for database access
 API Layer - REST controllers: BookingController and CarController for HTTP endpoints
 DataInitializer - CommandLineRunner that populates initial data
 Key Features:
 
+User authentication (login and registration with SHA-256 password hashing)
 Car selection with pricing calculation
 Booking creation with date validation
 Booking cancellation
