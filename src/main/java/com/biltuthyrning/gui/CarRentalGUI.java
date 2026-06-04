@@ -301,19 +301,21 @@ public class CarRentalGUI extends Application {
 
     static String carBadgeColor(String model) {
         String m = model.toUpperCase();
-        if (m.contains("EX60"))  return "#1E8449";
-        if (m.contains("XC40"))  return "#2471A3";
-        if (m.contains("XC60"))  return "#1A6090";
-        if (m.contains("XC90"))  return "#154360";
-        if (m.contains("S90"))   return "#6C3483";
-        if (m.contains("V90"))   return "#0E6655";
+        if (m.contains("EX60"))  return "#1E8449";  // electric green
+        if (m.contains("EX30"))  return "#148F77";  // teal-green (smaller EV)
+        if (m.contains("XC40"))  return "#2471A3";  // blue
+        if (m.contains("XC60"))  return "#1A6090";  // darker blue
+        if (m.contains("XC90"))  return "#154360";  // navy
+        if (m.contains("S90"))   return "#6C3483";  // purple
+        if (m.contains("V90"))   return "#0E6655";  // teal
+        if (m.contains("V60"))   return "#922B21";  // burgundy
         return "#2E86C1";
     }
 
     private static String getCarType(String model) {
         String m = model.toUpperCase();
         if (m.contains("S90"))  return "sedan";
-        if (m.contains("V90"))  return "wagon";
+        if (m.contains("V90") || m.contains("V60")) return "wagon";
         if (m.contains("XC90")) return "large-suv";
         return "suv";
     }
@@ -398,12 +400,19 @@ public class CarRentalGUI extends Application {
         drawWheel(gc, 19, 46, 9, tyre, rim);
         drawWheel(gc, 71, 46, 9, tyre, rim);
 
-        if (model.toUpperCase().contains("EX")) {
+        String mu = model.toUpperCase();
+        if (mu.contains("EX")) {
             gc.setFill(Color.color(0.1, 0.1, 0.1, 0.65));
-            gc.fillRoundRect(36, 21, 22, 12, 4, 4);
+            gc.fillRoundRect(33, 21, 26, 12, 4, 4);
             gc.setFill(Color.web("#F1C40F"));
             gc.setFont(Font.font("Segoe UI", FontWeight.BOLD, 9));
-            gc.fillText("EV ⚡", 38, 31);
+            gc.fillText("EV ⚡", 35, 31);
+        } else if (mu.contains("T8") || mu.contains("RECHARGE")) {
+            gc.setFill(Color.color(0.1, 0.1, 0.1, 0.65));
+            gc.fillRoundRect(30, 21, 32, 12, 4, 4);
+            gc.setFill(Color.web("#ABEBC6"));
+            gc.setFont(Font.font("Segoe UI", FontWeight.BOLD, 9));
+            gc.fillText("PHEV 🔌", 32, 31);
         }
     }
 

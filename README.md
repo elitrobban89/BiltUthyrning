@@ -10,6 +10,12 @@ Standardinloggning: **admin** / **admin123**
 
 ## Changelog
 
+### Tre nya bilar i flottan (2026-06-04)
+- **Volvo EX30 Twin Motor** (2024) — El 315 kW Twin Motor — 1 099 kr/dag — teal-grön färg + EV ⚡-badge
+- **Volvo V60 B6** (2023) — 3.0L B6 Bensin + dragkrok — 1 199 kr/dag — burgunder-röd kombiprofil
+- **Volvo XC60 T8 Recharge** (2024) — T8 Laddhybrid 340 kW — 1 349 kr/dag — PHEV 🔌-badge
+- `DataInitializer` lägger nu till bilar per modellnamn (idempotent — säker att köra mot befintlig databas)
+
 ### UX-förbättringar & bokningshantering (2026-06-04)
 - Tillgänglighetsbadge per bil i listan — visar "Ledig" (grön) eller "Uppbokad" (röd) baserat på valda datum, uppdateras live
 - Live tillgänglighets- och prisindikator i bokningsformuläret — "Uppbokad"-bilen låser bekräfta-knappen automatiskt
@@ -52,9 +58,12 @@ Standardinloggning: **admin** / **admin123**
 | Volvo XC40 | 2023 | B4 AWD | 899 kr |
 | Volvo XC60 B4 | 2024 | 2.0L B4 Mild Hybrid | 999 kr |
 | Volvo XC60 D5 | 2022 | 2.0L D5 Diesel | 949 kr |
+| Volvo XC60 T8 Recharge | 2024 | T8 Laddhybrid — 340 kW | 1 349 kr |
 | Volvo XC90 | 2025 | 1.5L B5 | 1 499 kr |
+| Volvo EX30 Twin Motor | 2024 | El — 315 kW Twin Motor | 1 099 kr |
 | Volvo EX60 P6 | 2025 | El — 300 kW | 1 199 kr |
 | Volvo S90 | 2023 | B5 AWD | 1 299 kr |
+| Volvo V60 B6 | 2023 | 3.0L B6 Bensin + dragkrok | 1 199 kr |
 | Volvo V90 | 2022 | 2.0L B4 | 1 099 kr |
 
 ---
