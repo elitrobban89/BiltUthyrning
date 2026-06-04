@@ -10,6 +10,14 @@ Standardinloggning: **admin** / **admin123**
 
 ## Changelog
 
+### UX-förbättringar & bokningshantering (2026-06-04)
+- Tillgänglighetsbadge per bil i listan — visar "Ledig" (grön) eller "Uppbokad" (röd) baserat på valda datum, uppdateras live
+- Live tillgänglighets- och prisindikator i bokningsformuläret — "Uppbokad"-bilen låser bekräfta-knappen automatiskt
+- Datumvalidering i realtid — röd varningstext visas direkt om slutdatum är före startdatum
+- Statusfilter på bokningstabell — dropdown: Alla / Bekräftade / Avbokade / Avslutade
+- Ny "Markera som klar"-knapp (grön) — sätter bokning till `COMPLETED`
+- Avboka- och Markera-knapparna är inaktiva tills en `CONFIRMED` bokning väljs i tabellen
+
 ### GUI-redesign & nya bilar (2026-05-31)
 - Omdesignad UI med modernt blått tema (Volvo-inspirerat)
 - Varje bil i listan visas nu med en JavaFX Canvas-ritad sidoprofil anpassad per biltyp:

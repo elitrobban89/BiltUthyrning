@@ -26,25 +26,30 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 
 public class CarRentalGUI extends Application {
 
     // ── Palette ──────────────────────────────────────────────────────────────
-    private static final String PRIMARY   = "#1C4E80";
-    private static final String BG        = "#EEF2F7";
-    private static final String CARD      = "#FFFFFF";
-    private static final String BORDER    = "#D5DCE8";
-    private static final String TEXT      = "#2C3E50";
-    private static final String MUTED     = "#7F8C8D";
-    private static final String SEL_BG    = "#EBF5FB";
-    private static final String SEL_BORD  = "#2E86C1";
+    private static final String PRIMARY  = "#1C4E80";
+    private static final String BG       = "#EEF2F7";
+    private static final String CARD     = "#FFFFFF";
+    private static final String BORDER   = "#D5DCE8";
+    private static final String TEXT     = "#2C3E50";
+    private static final String MUTED    = "#7F8C8D";
+    private static final String SEL_BG   = "#EBF5FB";
+    private static final String SEL_BORD = "#2E86C1";
 
     private static final String BTN_PRIMARY =
         "-fx-background-color: #1C4E80; -fx-text-fill: white; -fx-font-weight: bold; " +
         "-fx-padding: 8 18; -fx-background-radius: 5; -fx-cursor: hand;";
     private static final String BTN_DANGER =
         "-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-font-weight: bold; " +
+        "-fx-padding: 8 18; -fx-background-radius: 5; -fx-cursor: hand;";
+    private static final String BTN_SUCCESS =
+        "-fx-background-color: #27AE60; -fx-text-fill: white; -fx-font-weight: bold; " +
         "-fx-padding: 8 18; -fx-background-radius: 5; -fx-cursor: hand;";
     private static final String BTN_SECONDARY =
         "-fx-background-color: #ECF0F1; -fx-text-fill: " + TEXT + "; -fx-font-weight: bold; " +
@@ -53,17 +58,24 @@ public class CarRentalGUI extends Application {
     // ── State ─────────────────────────────────────────────────────────────────
     private static ConfigurableApplicationContext springContext;
 
-    private CarService carService;
+    private CarService    carService;
     private BookingService bookingService;
-    private UserService userService;
-    private User loggedInUser;
+    private UserService   userService;
+    private User          loggedInUser;
 
-    private ListView<Car> carListView;
-    private DatePicker startDatePicker;
-    private DatePicker endDatePicker;
-    private Label priceLabel;
-    private TableView<Booking> bookingTable;
-    private TextField customerNameField;
+    private ListView<Car>       carListView;
+    private DatePicker          startDatePicker;
+    private DatePicker          endDatePicker;
+    private Label               priceLabel;
+    private Label               warningLabel;
+    private Label               availabilityLabel;
+    private Button              confirmBtn;
+    private TableView<Booking>  bookingTable;
+    private TextField           customerNameField;
+    private Button              cancelBtn;
+    private Button              completeBtn;
+    private ComboBox<String>    statusFilter;
+    private List<Booking>       allBookings = new ArrayList<>();
 
     // ── JavaFX lifecycle ──────────────────────────────────────────────────────
 
@@ -200,6 +212,11 @@ public class CarRentalGUI extends Application {
 
         datesRow.getChildren().addAll(startBox, endBox);
 
+        warningLabel = new Label("Slutdatum måste vara efter startdatumet.");
+        warningLabel.setStyle("-fx-text-fill: #E74C3C; -fx-font-size: 11;");
+        warningLabel.setVisible(false);
+        warningLabel.setManaged(false);
+
         VBox nameBox = new VBox(4);
         customerNameField = new TextField();
         customerNameField.setPromptText("Ange kundnamn");
@@ -209,15 +226,21 @@ public class CarRentalGUI extends Application {
             "-fx-border-radius: 4; -fx-background-radius: 4;");
         nameBox.getChildren().addAll(label("Kundnamn", "11", MUTED, false), customerNameField);
 
+        HBox priceRow = new HBox(12);
+        priceRow.setAlignment(Pos.CENTER_LEFT);
         priceLabel = new Label("Totalt pris:  –");
         priceLabel.setStyle(
             "-fx-font-size: 15; -fx-font-weight: bold; -fx-text-fill: " + PRIMARY + ";");
+        availabilityLabel = new Label();
+        availabilityLabel.setStyle(
+            "-fx-font-size: 11; -fx-font-weight: bold; -fx-padding: 3 10; -fx-background-radius: 10;");
+        priceRow.getChildren().addAll(priceLabel, availabilityLabel);
 
-        Button confirmBtn = new Button("✔  Bekräfta bokning");
+        confirmBtn = new Button("✔  Bekräfta bokning");
         confirmBtn.setStyle(BTN_PRIMARY);
         confirmBtn.setOnAction(e -> handleBooking());
 
-        card.getChildren().addAll(datesRow, nameBox, priceLabel, confirmBtn);
+        card.getChildren().addAll(datesRow, warningLabel, nameBox, priceRow, confirmBtn);
         return card;
     }
 
@@ -240,17 +263,37 @@ public class CarRentalGUI extends Application {
             col("Status", 95,  b -> b.getStatus().toString())
         );
 
+        bookingTable.getSelectionModel().selectedItemProperty()
+            .addListener((obs, old, cur) -> updateButtonStates());
+
+        // Filter row
+        HBox filterRow = new HBox(8);
+        filterRow.setAlignment(Pos.CENTER_LEFT);
+        statusFilter = new ComboBox<>();
+        statusFilter.getItems().addAll("Alla", "Bekräftade", "Avbokade", "Avslutade");
+        statusFilter.setValue("Alla");
+        statusFilter.setStyle("-fx-font-size: 12;");
+        statusFilter.setOnAction(e -> applyFilter());
+        filterRow.getChildren().addAll(label("Visa:", "11", MUTED, false), statusFilter);
+
+        // Button row
         HBox btnRow = new HBox(10);
         Button refreshBtn = new Button("↻  Uppdatera");
         refreshBtn.setStyle(BTN_SECONDARY);
         refreshBtn.setOnAction(e -> loadBookings());
 
-        Button cancelBtn = new Button("✖  Avboka vald");
+        cancelBtn = new Button("✖  Avboka");
         cancelBtn.setStyle(BTN_DANGER);
+        cancelBtn.setDisable(true);
         cancelBtn.setOnAction(e -> handleCancelBooking());
 
-        btnRow.getChildren().addAll(refreshBtn, cancelBtn);
-        card.getChildren().addAll(btnRow, bookingTable);
+        completeBtn = new Button("✔  Markera som klar");
+        completeBtn.setStyle(BTN_SUCCESS);
+        completeBtn.setDisable(true);
+        completeBtn.setOnAction(e -> handleCompleteBooking());
+
+        btnRow.getChildren().addAll(refreshBtn, cancelBtn, completeBtn);
+        card.getChildren().addAll(filterRow, btnRow, bookingTable);
         return card;
     }
 
@@ -258,12 +301,12 @@ public class CarRentalGUI extends Application {
 
     static String carBadgeColor(String model) {
         String m = model.toUpperCase();
-        if (m.contains("EX60"))  return "#1E8449"; // electric green
-        if (m.contains("XC40"))  return "#2471A3"; // blue
-        if (m.contains("XC60"))  return "#1A6090"; // darker blue
-        if (m.contains("XC90"))  return "#154360"; // navy
-        if (m.contains("S90"))   return "#6C3483"; // purple
-        if (m.contains("V90"))   return "#0E6655"; // teal
+        if (m.contains("EX60"))  return "#1E8449";
+        if (m.contains("XC40"))  return "#2471A3";
+        if (m.contains("XC60"))  return "#1A6090";
+        if (m.contains("XC90"))  return "#154360";
+        if (m.contains("S90"))   return "#6C3483";
+        if (m.contains("V90"))   return "#0E6655";
         return "#2E86C1";
     }
 
@@ -272,7 +315,7 @@ public class CarRentalGUI extends Application {
         if (m.contains("S90"))  return "sedan";
         if (m.contains("V90"))  return "wagon";
         if (m.contains("XC90")) return "large-suv";
-        return "suv"; // XC40, XC60, EX60
+        return "suv";
     }
 
     // ── Canvas car drawing ────────────────────────────────────────────────────
@@ -289,19 +332,15 @@ public class CarRentalGUI extends Application {
 
         String type = getCarType(model);
 
-        // Ground shadow
         gc.setFill(Color.color(0, 0, 0, 0.10));
         gc.fillOval(9, 51, 72, 7);
 
-        // Lower body (shared across types)
         gc.setFill(base);
         gc.fillRoundRect(4, 34, 82, 12, 6, 6);
 
-        // Cabin polygon, windows — differ by type
         double[] roofX, roofY, w1x, w1y, w2x, w2y;
 
         if ("sedan".equals(type)) {
-            // Three-box profile: shorter cabin, hood + trunk visible
             roofX = new double[]{18, 18, 27, 62, 70, 70};
             roofY = new double[]{34, 23, 17, 17, 23, 34};
             w1x   = new double[]{22, 24, 36, 36};
@@ -309,7 +348,6 @@ public class CarRentalGUI extends Application {
             w2x   = new double[]{38, 38, 60, 62};
             w2y   = new double[]{34, 18, 18, 34};
         } else if ("wagon".equals(type)) {
-            // Long flat roofline, three windows
             roofX = new double[]{11, 11, 18, 75, 79, 79};
             roofY = new double[]{34, 18, 13, 13, 18, 34};
             w1x   = new double[]{19, 21, 35, 35};
@@ -317,7 +355,6 @@ public class CarRentalGUI extends Application {
             w2x   = new double[]{37, 37, 52, 52};
             w2y   = new double[]{34, 14, 14, 34};
         } else if ("large-suv".equals(type)) {
-            // Tall, wide SUV
             roofX = new double[]{8, 8, 16, 74, 81, 81};
             roofY = new double[]{34, 16, 11, 11, 16, 34};
             w1x   = new double[]{17, 19, 38, 38};
@@ -325,7 +362,6 @@ public class CarRentalGUI extends Application {
             w2x   = new double[]{40, 40, 70, 72};
             w2y   = new double[]{34, 12, 12, 34};
         } else {
-            // Standard SUV/crossover
             roofX = new double[]{11, 11, 18, 72, 78, 78};
             roofY = new double[]{34, 18, 13, 13, 18, 34};
             w1x   = new double[]{19, 21, 36, 36};
@@ -334,45 +370,34 @@ public class CarRentalGUI extends Application {
             w2y   = new double[]{34, 14, 14, 34};
         }
 
-        // Cabin fill
         gc.setFill(base);
         gc.fillPolygon(roofX, roofY, roofX.length);
 
-        // Outlines
         gc.setStroke(dark);
         gc.setLineWidth(1.3);
         gc.strokeRoundRect(4, 34, 82, 12, 6, 6);
         gc.strokePolygon(roofX, roofY, roofX.length);
 
-        // Windows
         gc.setFill(glass);
         gc.fillPolygon(w1x, w1y, w1x.length);
         gc.fillPolygon(w2x, w2y, w2x.length);
-        if ("wagon".equals(type)) {
-            gc.fillRect(54, 14, 18, 20);
-        }
+        if ("wagon".equals(type)) gc.fillRect(54, 14, 18, 20);
 
         gc.setStroke(dark.deriveColor(0, 1, 1.4, 0.6));
         gc.setLineWidth(0.8);
         gc.strokePolygon(w1x, w1y, w1x.length);
         gc.strokePolygon(w2x, w2y, w2x.length);
-        if ("wagon".equals(type)) {
-            gc.strokeRect(54, 14, 18, 20);
-        }
+        if ("wagon".equals(type)) gc.strokeRect(54, 14, 18, 20);
 
-        // Headlight (front = right)
         gc.setFill(Color.color(1.0, 0.97, 0.75));
         gc.fillOval(83, 37, 5, 4);
 
-        // Taillight (rear = left)
         gc.setFill(Color.color(0.92, 0.12, 0.10));
         gc.fillOval(3, 37, 5, 4);
 
-        // Wheels
         drawWheel(gc, 19, 46, 9, tyre, rim);
         drawWheel(gc, 71, 46, 9, tyre, rim);
 
-        // EV badge for electric models
         if (model.toUpperCase().contains("EX")) {
             gc.setFill(Color.color(0.1, 0.1, 0.1, 0.65));
             gc.fillRoundRect(36, 21, 22, 12, 4, 4);
@@ -400,14 +425,16 @@ public class CarRentalGUI extends Application {
     }
 
     // ── Custom ListView cell ──────────────────────────────────────────────────
+    // Non-static so it can read startDatePicker/endDatePicker/bookingService
 
-    private static class CarListCell extends ListCell<Car> {
+    private class CarListCell extends ListCell<Car> {
 
-        private final HBox   row       = new HBox(12);
-        private final Canvas canvas    = new Canvas(90, 55);
-        private final Label  nameLbl   = new Label();
-        private final Label  detailLbl = new Label();
-        private final Label  priceLbl  = new Label();
+        private final HBox   row              = new HBox(12);
+        private final Canvas canvas           = new Canvas(90, 55);
+        private final Label  nameLbl          = new Label();
+        private final Label  detailLbl        = new Label();
+        private final Label  priceLbl         = new Label();
+        private final Label  availabilityBadge = new Label();
 
         CarListCell() {
             row.setAlignment(Pos.CENTER_LEFT);
@@ -416,8 +443,7 @@ public class CarRentalGUI extends Application {
             StackPane canvasPane = new StackPane(canvas);
             canvasPane.setMinWidth(96);
             canvasPane.setMinHeight(58);
-            canvasPane.setStyle(
-                "-fx-background-color: #F0F4F8; -fx-background-radius: 8;");
+            canvasPane.setStyle("-fx-background-color: #F0F4F8; -fx-background-radius: 8;");
 
             nameLbl.setStyle("-fx-font-weight: bold; -fx-font-size: 13; -fx-text-fill: " + TEXT + ";");
             detailLbl.setStyle("-fx-font-size: 11; -fx-text-fill: " + MUTED + ";");
@@ -425,8 +451,11 @@ public class CarRentalGUI extends Application {
                 "-fx-background-color: #EBF5FB; -fx-text-fill: " + PRIMARY + "; " +
                 "-fx-font-size: 11; -fx-font-weight: bold; " +
                 "-fx-padding: 4 10; -fx-background-radius: 12;");
+            availabilityBadge.setStyle(
+                "-fx-font-size: 10; -fx-font-weight: bold; " +
+                "-fx-padding: 3 8; -fx-background-radius: 10;");
 
-            VBox textBox = new VBox(3, nameLbl, detailLbl);
+            VBox textBox = new VBox(3, nameLbl, detailLbl, availabilityBadge);
             HBox.setHgrow(textBox, Priority.ALWAYS);
 
             row.getChildren().addAll(canvasPane, textBox, priceLbl);
@@ -442,8 +471,39 @@ public class CarRentalGUI extends Application {
             nameLbl.setText(car.getModel());
             detailLbl.setText(car.getYear() + "  ·  " + car.getEngine());
             priceLbl.setText(car.getDailyRate().toPlainString() + " kr/dag");
+            updateAvailabilityBadge(car);
             applyRowStyle(isSelected());
             setGraphic(row);
+        }
+
+        private void updateAvailabilityBadge(Car car) {
+            LocalDate s = startDatePicker != null ? startDatePicker.getValue() : null;
+            LocalDate e = endDatePicker   != null ? endDatePicker.getValue()   : null;
+
+            if (s == null || e == null || !e.isAfter(s) || bookingService == null) {
+                availabilityBadge.setText("");
+                availabilityBadge.setStyle(
+                    "-fx-font-size: 10; -fx-font-weight: bold; -fx-padding: 3 8; -fx-background-radius: 10;");
+                return;
+            }
+            try {
+                boolean available = bookingService.isCarAvailable(car.getId(), s, e);
+                if (available) {
+                    availabilityBadge.setText("● Ledig");
+                    availabilityBadge.setStyle(
+                        "-fx-font-size: 10; -fx-font-weight: bold; " +
+                        "-fx-padding: 3 8; -fx-background-radius: 10; " +
+                        "-fx-background-color: #EAFAF1; -fx-text-fill: #1E8449;");
+                } else {
+                    availabilityBadge.setText("● Uppbokad");
+                    availabilityBadge.setStyle(
+                        "-fx-font-size: 10; -fx-font-weight: bold; " +
+                        "-fx-padding: 3 8; -fx-background-radius: 10; " +
+                        "-fx-background-color: #FDEDEC; -fx-text-fill: #E74C3C;");
+                }
+            } catch (Exception ex) {
+                availabilityBadge.setText("");
+            }
         }
 
         private void applyRowStyle(boolean selected) {
@@ -467,18 +527,51 @@ public class CarRentalGUI extends Application {
     }
 
     private void updatePrice() {
+        LocalDate s = startDatePicker.getValue();
+        LocalDate e = endDatePicker.getValue();
+
+        boolean datesValid = s != null && e != null && e.isAfter(s);
+        boolean showWarning = s != null && e != null && !datesValid;
+        warningLabel.setVisible(showWarning);
+        warningLabel.setManaged(showWarning);
+
+        carListView.refresh();
+
+        if (!datesValid) {
+            priceLabel.setText("Totalt pris:  –");
+            availabilityLabel.setText("");
+            confirmBtn.setDisable(true);
+            return;
+        }
+
         try {
-            Car car     = carListView.getSelectionModel().getSelectedItem();
-            LocalDate s = startDatePicker.getValue();
-            LocalDate e = endDatePicker.getValue();
-            if (car == null || s == null || e == null || !e.isAfter(s)) {
+            Car car = carListView.getSelectionModel().getSelectedItem();
+            if (car == null) {
                 priceLabel.setText("Totalt pris:  –");
+                availabilityLabel.setText("");
+                confirmBtn.setDisable(false);
                 return;
             }
             BigDecimal price = bookingService.calculateTotalPrice(car.getId(), s, e);
             priceLabel.setText(String.format("Totalt pris:  %.2f kr", price));
+
+            boolean available = bookingService.isCarAvailable(car.getId(), s, e);
+            if (available) {
+                availabilityLabel.setText("Ledig");
+                availabilityLabel.setStyle(
+                    "-fx-font-size: 11; -fx-font-weight: bold; -fx-padding: 3 10; " +
+                    "-fx-background-radius: 10; -fx-background-color: #EAFAF1; -fx-text-fill: #1E8449;");
+                confirmBtn.setDisable(false);
+            } else {
+                availabilityLabel.setText("Uppbokad");
+                availabilityLabel.setStyle(
+                    "-fx-font-size: 11; -fx-font-weight: bold; -fx-padding: 3 10; " +
+                    "-fx-background-radius: 10; -fx-background-color: #FDEDEC; -fx-text-fill: #E74C3C;");
+                confirmBtn.setDisable(true);
+            }
         } catch (Exception ex) {
             priceLabel.setText("Totalt pris:  –");
+            availabilityLabel.setText("");
         }
     }
 
@@ -500,6 +593,7 @@ public class CarRentalGUI extends Application {
             showInfo("Bokning bekräftad!  Boknings-ID: " + booking.getId());
             customerNameField.clear();
             loadBookings();
+            carListView.refresh();
         } catch (Exception e) {
             showError("Bokningsfel: " + e.getMessage());
         }
@@ -507,13 +601,10 @@ public class CarRentalGUI extends Application {
 
     private void handleCancelBooking() {
         Booking selected = bookingTable.getSelectionModel().getSelectedItem();
-        if (selected == null) {
-            showError("Välj en bokning i tabellen att avboka.");
-            return;
-        }
+        if (selected == null) return;
+
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
-            "Avboka bokning #" + selected.getId() +
-            " för " + selected.getCustomerName() + "?",
+            "Avboka bokning #" + selected.getId() + " för " + selected.getCustomerName() + "?",
             ButtonType.YES, ButtonType.NO);
         confirm.setTitle("Bekräfta avbokning");
         confirm.setHeaderText(null);
@@ -523,6 +614,7 @@ public class CarRentalGUI extends Application {
                     bookingService.cancelBooking(selected.getId());
                     showInfo("Bokning avbokad!");
                     loadBookings();
+                    carListView.refresh();
                 } catch (Exception e) {
                     showError("Avbokningsfel: " + e.getMessage());
                 }
@@ -530,13 +622,60 @@ public class CarRentalGUI extends Application {
         });
     }
 
+    private void handleCompleteBooking() {
+        Booking selected = bookingTable.getSelectionModel().getSelectedItem();
+        if (selected == null) return;
+
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
+            "Markera bokning #" + selected.getId() + " som avslutad?",
+            ButtonType.YES, ButtonType.NO);
+        confirm.setTitle("Bekräfta");
+        confirm.setHeaderText(null);
+        confirm.showAndWait().ifPresent(btn -> {
+            if (btn == ButtonType.YES) {
+                try {
+                    bookingService.completeBooking(selected.getId());
+                    showInfo("Bokning markerad som avslutad!");
+                    loadBookings();
+                    carListView.refresh();
+                } catch (Exception e) {
+                    showError("Fel: " + e.getMessage());
+                }
+            }
+        });
+    }
+
     private void loadBookings() {
         try {
-            if (bookingService != null)
-                bookingTable.getItems().setAll(bookingService.getAllBookings());
+            if (bookingService != null) {
+                allBookings = bookingService.getAllBookings();
+                applyFilter();
+            }
         } catch (Exception e) {
             showError("Fel vid hämtning av bokningar: " + e.getMessage());
         }
+    }
+
+    private void applyFilter() {
+        if (statusFilter == null) return;
+        List<Booking> filtered = switch (statusFilter.getValue()) {
+            case "Bekräftade" -> allBookings.stream()
+                .filter(b -> b.getStatus() == Booking.BookingStatus.CONFIRMED).toList();
+            case "Avbokade"   -> allBookings.stream()
+                .filter(b -> b.getStatus() == Booking.BookingStatus.CANCELLED).toList();
+            case "Avslutade"  -> allBookings.stream()
+                .filter(b -> b.getStatus() == Booking.BookingStatus.COMPLETED).toList();
+            default           -> allBookings;
+        };
+        bookingTable.getItems().setAll(filtered);
+        updateButtonStates();
+    }
+
+    private void updateButtonStates() {
+        Booking selected = bookingTable.getSelectionModel().getSelectedItem();
+        boolean isConfirmed = selected != null && selected.getStatus() == Booking.BookingStatus.CONFIRMED;
+        cancelBtn.setDisable(!isConfirmed);
+        completeBtn.setDisable(!isConfirmed);
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────

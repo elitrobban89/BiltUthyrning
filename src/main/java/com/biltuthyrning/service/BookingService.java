@@ -62,8 +62,20 @@ public class BookingService {
     public void cancelBooking(Long bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
             .orElseThrow(() -> new IllegalArgumentException("Booking not found: " + bookingId));
-
+        if (booking.getStatus() != Booking.BookingStatus.CONFIRMED) {
+            throw new IllegalStateException("Only CONFIRMED bookings can be cancelled");
+        }
         booking.setStatus(Booking.BookingStatus.CANCELLED);
+        bookingRepository.save(booking);
+    }
+
+    public void completeBooking(Long bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+            .orElseThrow(() -> new IllegalArgumentException("Booking not found: " + bookingId));
+        if (booking.getStatus() != Booking.BookingStatus.CONFIRMED) {
+            throw new IllegalStateException("Only CONFIRMED bookings can be marked as completed");
+        }
+        booking.setStatus(Booking.BookingStatus.COMPLETED);
         bookingRepository.save(booking);
     }
 
