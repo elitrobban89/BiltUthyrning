@@ -54,6 +54,12 @@ public class CarRentalGUI extends Application {
     private static final String BTN_SECONDARY =
         "-fx-background-color: #ECF0F1; -fx-text-fill: " + TEXT + "; -fx-font-weight: bold; " +
         "-fx-padding: 8 18; -fx-background-radius: 5; -fx-cursor: hand;";
+    private static final String BTN_FILTER =
+        "-fx-background-color: #ECF0F1; -fx-text-fill: " + TEXT + "; -fx-font-size: 11; " +
+        "-fx-padding: 5 13; -fx-background-radius: 20; -fx-cursor: hand;";
+    private static final String BTN_FILTER_ACTIVE =
+        "-fx-background-color: #1C4E80; -fx-text-fill: white; -fx-font-size: 11; " +
+        "-fx-font-weight: bold; -fx-padding: 5 13; -fx-background-radius: 20; -fx-cursor: hand;";
 
     // ── State ─────────────────────────────────────────────────────────────────
     private static ConfigurableApplicationContext springContext;
@@ -64,6 +70,8 @@ public class CarRentalGUI extends Application {
     private User          loggedInUser;
 
     private ListView<Car>       carListView;
+    private List<Car>           allCars = new ArrayList<>();
+    private ToggleGroup         fuelFilterGroup;
     private DatePicker          startDatePicker;
     private DatePicker          endDatePicker;
     private Label               priceLabel;
@@ -166,6 +174,15 @@ public class CarRentalGUI extends Application {
 
         Label heading = label("Tillgängliga bilar", "14", TEXT, true);
 
+        fuelFilterGroup = new ToggleGroup();
+        ToggleButton allBtn    = fuelToggle("Alla",           "Alla",        true);
+        ToggleButton bensinBtn = fuelToggle("⛽ Bensin",      "Bensin",      false);
+        ToggleButton phevBtn   = fuelToggle("🔌 Laddhybrid",  "Laddhybrid",  false);
+        ToggleButton elBtn     = fuelToggle("⚡ El",           "El",          false);
+
+        HBox filterRow = new HBox(6, allBtn, bensinBtn, phevBtn, elBtn);
+        filterRow.setAlignment(Pos.CENTER_LEFT);
+
         carListView = new ListView<>();
         carListView.setCellFactory(lv -> new CarListCell());
         carListView.setStyle(
@@ -175,8 +192,21 @@ public class CarRentalGUI extends Application {
         carListView.getSelectionModel().selectedItemProperty()
             .addListener((obs, old, cur) -> updatePrice());
 
-        panel.getChildren().addAll(heading, carListView);
+        panel.getChildren().addAll(heading, filterRow, carListView);
         return panel;
+    }
+
+    private ToggleButton fuelToggle(String label, String value, boolean selected) {
+        ToggleButton btn = new ToggleButton(label);
+        btn.setToggleGroup(fuelFilterGroup);
+        btn.setUserData(value);
+        btn.setSelected(selected);
+        btn.setStyle(selected ? BTN_FILTER_ACTIVE : BTN_FILTER);
+        btn.selectedProperty().addListener((obs, old, sel) -> {
+            btn.setStyle(sel ? BTN_FILTER_ACTIVE : BTN_FILTER);
+            if (sel) applyCarFilter();
+        });
+        return btn;
     }
 
     // ── Right: booking form + table ───────────────────────────────────────────
@@ -528,11 +558,29 @@ public class CarRentalGUI extends Application {
 
     private void loadCars() {
         try {
-            if (carService != null)
-                carListView.getItems().setAll(carService.getAllCars());
+            if (carService != null) {
+                allCars = carService.getAllCars();
+                applyCarFilter();
+            }
         } catch (Exception e) {
             showError("Fel vid hämtning av bilar: " + e.getMessage());
         }
+    }
+
+    private void applyCarFilter() {
+        ToggleButton sel = (ToggleButton) fuelFilterGroup.getSelectedToggle();
+        String filter = sel != null ? (String) sel.getUserData() : "Alla";
+        List<Car> filtered = "Alla".equals(filter)
+            ? allCars
+            : allCars.stream().filter(c -> getFuelType(c).equals(filter)).toList();
+        carListView.getItems().setAll(filtered);
+    }
+
+    private static String getFuelType(Car car) {
+        String e = car.getEngine().toUpperCase();
+        if (e.startsWith("EL")) return "El";
+        if (e.contains("LADDHYBRID") || e.contains("T8")) return "Laddhybrid";
+        return "Bensin";
     }
 
     private void updatePrice() {
