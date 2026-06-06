@@ -108,6 +108,7 @@ public class CarRentalGUI extends Application {
         Scene scene = new Scene(root, 1060, 700);
         primaryStage.setTitle("BilUthyrning");
         primaryStage.setScene(scene);
+        primaryStage.setOnCloseRequest(e -> Platform.exit());
         primaryStage.show();
 
         loadCars();
@@ -117,6 +118,7 @@ public class CarRentalGUI extends Application {
     @Override
     public void stop() throws Exception {
         if (springContext != null) springContext.close();
+        System.exit(0);
     }
 
     private void initializeServices() {
