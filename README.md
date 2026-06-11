@@ -154,7 +154,7 @@ Tabeller (båda): `cars`, `bookings`, `users`
 | 1 | **Säkerhet** | Lösenord hashas med SHA-256 utan salt — bör bytas till BCrypt |
 | 2 | **Adminpanel** | Bilar kan inte läggas till/redigeras/tas bort via webbgränssnittet |
 | 3 | **Felsida** | Whitelabel Error Page visas vid fel — bör ersättas med egen sida |
-| 4 | **Laddningsindikator** | ✅ Åtgärdad — spinner visas i WordPress-iframe under cold-start |
+| 4 | **Laddningsindikator** | ✅ Åtgärdad — UptimeRobot pingar `/health` var 5:e min, Render sover aldrig. Spinner visas som fallback. |
 | 5 | **Paginering** | Bokningstabell saknar paginering — kan bli trög vid många bokningar |
 | 6 | **Datumfilter** | ✅ Åtgärdad — filtrering på kundnamn och datumintervall tillagt |
 | 7 | **Databas-expiry** | Render free-tier PostgreSQL raderas efter 90 dagar — bör säkerhetskopieras eller uppgraderas |
