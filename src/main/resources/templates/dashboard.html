@@ -112,12 +112,16 @@
 
             <div class="table-controls">
                 <label>Visa:</label>
-                <select onchange="filterBookings(this.value)">
+                <select id="statusFilter" onchange="applyBookingFilters()">
                     <option value="Alla">Alla</option>
                     <option value="CONFIRMED">Bekräftade</option>
                     <option value="CANCELLED">Avbokade</option>
                     <option value="COMPLETED">Avslutade</option>
                 </select>
+                <input type="text" id="bookingSearch" class="booking-search" placeholder="Sök kund…" oninput="applyBookingFilters()"/>
+                <input type="date" id="filterFrom" onchange="applyBookingFilters()" title="Från datum"/>
+                <span class="date-sep">–</span>
+                <input type="date" id="filterTo" onchange="applyBookingFilters()" title="Till datum"/>
             </div>
 
             <div class="table-wrapper">

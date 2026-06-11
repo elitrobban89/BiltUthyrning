@@ -108,12 +108,25 @@ function updateAllAvailability(start, end) {
     });
 }
 
-/* ── Booking table filter ── */
-function filterBookings(status) {
+/* ── Booking table filters (status + kund + datum) ── */
+function applyBookingFilters() {
+    const status = document.getElementById('statusFilter').value;
+    const search = document.getElementById('bookingSearch').value.toLowerCase().trim();
+    const from   = document.getElementById('filterFrom').value;
+    const to     = document.getElementById('filterTo').value;
+
     document.querySelectorAll('.bookings-table tbody tr').forEach(row => {
-        row.style.display = (status === 'Alla' || row.dataset.status === status) ? '' : 'none';
+        const statusOk   = status === 'Alla' || row.dataset.status === status;
+        const customer   = row.cells[2] ? row.cells[2].textContent.toLowerCase() : '';
+        const searchOk   = !search || customer.includes(search);
+        const rowDate    = row.cells[3] ? row.cells[3].textContent.trim() : '';
+        const fromOk     = !from || rowDate >= from;
+        const toOk       = !to   || rowDate <= to;
+        row.style.display = (statusOk && searchOk && fromOk && toOk) ? '' : 'none';
     });
 }
+
+function filterBookings(status) { applyBookingFilters(); }
 
 /* ── Booking form validation ── */
 function validateBooking() {

@@ -23,6 +23,12 @@ Det finns **två sätt** att köra systemet. De delar **inte** databas med varan
 
 ## Changelog
 
+### Bokningsfilter + laddningsindikator (2026-06-11)
+- Bokningstabell kan nu filtreras på **kundnamn** (textsökning i realtid)
+- Bokningstabell kan nu filtreras på **datumintervall** (från–till startdatum)
+- Status-, kund- och datumfilter fungerar tillsammans
+- Laddningsindikator i WordPress-iframe under Render cold-start (~30s)
+
 ### Webb-UI redesign (2026-06-11)
 - Nytt typsnitt: **Inter** (Google Fonts) — skarpare och modernare
 - Header med blå gradient (`#1a365d → #2b6cb0`)
@@ -148,7 +154,7 @@ Tabeller (båda): `cars`, `bookings`, `users`
 | 1 | **Säkerhet** | Lösenord hashas med SHA-256 utan salt — bör bytas till BCrypt |
 | 2 | **Adminpanel** | Bilar kan inte läggas till/redigeras/tas bort via webbgränssnittet |
 | 3 | **Felsida** | Whitelabel Error Page visas vid fel — bör ersättas med egen sida |
-| 4 | **Laddningsindikator** | Render free-tier sover efter inaktivitet (~30s uppstart) — ingen feedback till användaren |
+| 4 | **Laddningsindikator** | ✅ Åtgärdad — spinner visas i WordPress-iframe under cold-start |
 | 5 | **Paginering** | Bokningstabell saknar paginering — kan bli trög vid många bokningar |
-| 6 | **Datumfilter** | Bokningar kan bara filtreras på status, inte på datum eller kund |
+| 6 | **Datumfilter** | ✅ Åtgärdad — filtrering på kundnamn och datumintervall tillagt |
 | 7 | **Databas-expiry** | Render free-tier PostgreSQL raderas efter 90 dagar — bör säkerhetskopieras eller uppgraderas |
