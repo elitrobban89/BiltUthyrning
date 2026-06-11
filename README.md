@@ -23,6 +23,14 @@ Det finns **två sätt** att köra systemet. De delar **inte** databas med varan
 
 ## Changelog
 
+### Glassmorphism redesign (2026-06-11)
+- Mörk gradient-bakgrund med blå/lila/cyan färgblobs
+- Frosted glass-effekt på alla kort, paneler och header (`backdrop-filter: blur`)
+- Glödande hover-effekter på bilkort och knappar
+- Halvtransparenta formulärfält med mörkt tema
+- Inloggningssidan fick djupt glasskort med stark bakgrundsoskärpa
+- CSS-variabelsystem för konsekvent glasdesign
+
 ### Bokningsfilter + laddningsindikator (2026-06-11)
 - Bokningstabell kan nu filtreras på **kundnamn** (textsökning i realtid)
 - Bokningstabell kan nu filtreras på **datumintervall** (från–till startdatum)
