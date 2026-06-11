@@ -23,7 +23,7 @@
 </header>
 
 <!-- Flash messages -->
-<div class="flash-container" th:if="${success or error}">
+<div class="flash-container" th:if="${success != null or error != null}">
     <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
     <div th:if="${error}"   class="alert alert-error"   th:text="${error}"></div>
 </div>
