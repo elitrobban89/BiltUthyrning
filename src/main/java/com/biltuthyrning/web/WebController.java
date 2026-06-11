@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Controller
@@ -30,8 +31,20 @@ public class WebController {
 
     @GetMapping("/")
     public String dashboard(Model model, @AuthenticationPrincipal UserDetails user) {
-        model.addAttribute("cars", carService.getAllCars());
-        model.addAttribute("bookings", bookingService.getAllBookings());
+        var cars     = carService.getAllCars();
+        var bookings = bookingService.getAllBookings();
+        long active  = bookings.stream()
+                .filter(b -> b.getStatus() == Booking.BookingStatus.CONFIRMED)
+                .count();
+        int revenue  = bookings.stream()
+                .filter(b -> b.getStatus() != Booking.BookingStatus.CANCELLED)
+                .map(Booking::getTotalPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .intValue();
+        model.addAttribute("cars", cars);
+        model.addAttribute("bookings", bookings);
+        model.addAttribute("activeBookings", active);
+        model.addAttribute("totalRevenue", revenue);
         model.addAttribute("username", user.getUsername());
         return "dashboard";
     }

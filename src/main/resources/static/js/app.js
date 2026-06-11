@@ -9,6 +9,8 @@ function selectCar(el) {
     selectedCarId     = el.dataset.carId;
     selectedDailyRate = parseFloat(el.dataset.dailyRate);
     document.getElementById('selectedCarId').value = selectedCarId;
+    const hint = document.getElementById('noCarHint');
+    if (hint) hint.style.display = 'none';
     updatePrice();
 }
 
@@ -27,6 +29,8 @@ function filterCars(fuel, btn) {
             document.getElementById('priceLabel').textContent = 'Totalt pris: –';
             document.getElementById('availabilityBadge').textContent = '';
             document.getElementById('availabilityBadge').className = 'availability-badge';
+            const hint = document.getElementById('noCarHint');
+            if (hint) hint.style.display = '';
         }
     });
 }

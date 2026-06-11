@@ -8,6 +8,13 @@
 </head>
 <body>
 
+<!-- Aurora background -->
+<div class="aurora-bg" aria-hidden="true">
+    <span class="blob blob-1"></span>
+    <span class="blob blob-2"></span>
+    <span class="blob blob-3"></span>
+</div>
+
 <!-- Header -->
 <header class="app-header">
     <div class="header-left">
@@ -71,9 +78,31 @@
     <!-- ── Right panel ── -->
     <div class="right-panel">
 
+        <!-- Stats row -->
+        <div class="stats-row">
+            <div class="stat-chip">
+                <span class="stat-label">Bilar</span>
+                <span class="stat-value stat-accent" th:text="${#lists.size(cars)}">0</span>
+            </div>
+            <div class="stat-chip">
+                <span class="stat-label">Aktiva bokningar</span>
+                <span class="stat-value stat-green" th:text="${activeBookings}">0</span>
+            </div>
+            <div class="stat-chip">
+                <span class="stat-label">Total intäkt</span>
+                <span class="stat-value stat-purple" th:text="${totalRevenue + ' kr'}">0 kr</span>
+            </div>
+        </div>
+
         <!-- Booking form -->
         <div class="card">
             <h2 class="card-title">Gör en bokning</h2>
+
+            <div id="noCarHint" class="no-car-hint">
+                <span class="no-car-hint-icon">←</span>
+                <span>Välj en bil från listan för att göra en bokning</span>
+            </div>
+
             <form th:action="@{/book}" method="post" id="bookingForm" onsubmit="return validateBooking()">
                 <input type="hidden" name="carId" id="selectedCarId"/>
 
