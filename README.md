@@ -8,7 +8,7 @@ Biluthyrningssystem byggt med JavaFX och Spring Boot.
 Det finns **två sätt** att köra systemet. De delar **inte** databas med varandra — ändringar i ett system syns **inte** i det andra.
 
 ### 🌐 Webbversion (live på internet)
-- **URL:** https://elitrobban.se/bilradgivning/
+- **URL:** https://elitrobban.se/biluthyrning/
 - **Backend:** https://biltuthyrning.onrender.com
 - **Databas:** PostgreSQL i molnet (Render)
 - **Driftsatt via:** Docker på Render (byggs automatiskt vid push till `main`)
@@ -18,8 +18,6 @@ Det finns **två sätt** att köra systemet. De delar **inte** databas med varan
 - **Databas:** SQLite — filen `biltuthyrning.db` på din lokala dator
 - **Starta:** Kör `run.bat` i projektmappen. Kräver Java 21+ och JavaFX SDK (sökväg konfigureras i `run.bat`).
 - Inloggning: **admin** / **admin123**
-
----
 
 ---
 
@@ -140,3 +138,17 @@ Det finns **två sätt** att köra systemet. De delar **inte** databas med varan
 - Schema skapas automatiskt av Hibernate (`ddl-auto=update`)
 
 Tabeller (båda): `cars`, `bookings`, `users`
+
+---
+
+## Kända förbättringsområden
+
+| # | Område | Beskrivning |
+|---|---|---|
+| 1 | **Säkerhet** | Lösenord hashas med SHA-256 utan salt — bör bytas till BCrypt |
+| 2 | **Adminpanel** | Bilar kan inte läggas till/redigeras/tas bort via webbgränssnittet |
+| 3 | **Felsida** | Whitelabel Error Page visas vid fel — bör ersättas med egen sida |
+| 4 | **Laddningsindikator** | Render free-tier sover efter inaktivitet (~30s uppstart) — ingen feedback till användaren |
+| 5 | **Paginering** | Bokningstabell saknar paginering — kan bli trög vid många bokningar |
+| 6 | **Datumfilter** | Bokningar kan bara filtreras på status, inte på datum eller kund |
+| 7 | **Databas-expiry** | Render free-tier PostgreSQL raderas efter 90 dagar — bör säkerhetskopieras eller uppgraderas |
