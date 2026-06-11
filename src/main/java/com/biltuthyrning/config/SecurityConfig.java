@@ -1,5 +1,6 @@
 package com.biltuthyrning.config;
 
+import com.biltuthyrning.service.BookingService;
 import com.biltuthyrning.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,9 +16,11 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final UserService userService;
+    private final BookingService bookingService;
 
-    public SecurityConfig(UserService userService) {
+    public SecurityConfig(UserService userService, BookingService bookingService) {
         this.userService = userService;
+        this.bookingService = bookingService;
     }
 
     @Bean
@@ -34,6 +37,7 @@ public class SecurityConfig {
             )
             .logout(logout -> logout
                 .logoutUrl("/logout")
+                .addLogoutHandler((request, response, authentication) -> bookingService.deleteAllBookings())
                 .logoutSuccessUrl("/login?logout")
             )
             .csrf(csrf -> csrf

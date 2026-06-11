@@ -87,5 +87,9 @@ public class BookingService {
         return bookingRepository.findById(bookingId)
             .orElseThrow(() -> new IllegalArgumentException("Booking not found: " + bookingId));
     }
+
+    public void deleteAllBookings() {
+        bookingRepository.deleteAll();
+    }
 }
 
