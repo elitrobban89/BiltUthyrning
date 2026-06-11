@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: biluthyrning
+    runtime: docker
+    plan: free
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: DB_HOST
+        fromDatabase:
+          name: biluthyrning-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: biluthyrning-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: biluthyrning-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: biluthyrning-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: biluthyrning-db
+          property: password
+
+databases:
+  - name: biluthyrning-db
+    databaseName: biluthyrning
+    plan: free

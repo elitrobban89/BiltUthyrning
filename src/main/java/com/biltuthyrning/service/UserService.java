@@ -23,6 +23,10 @@ public class UserService {
                 .filter(u -> u.getPassword().equals(hashPassword(password)));
     }
 
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
     public User register(String username, String password, String role) {
         if (userRepository.findByUsername(username).isPresent()) {
             throw new RuntimeException("Användarnamnet är redan taget");
