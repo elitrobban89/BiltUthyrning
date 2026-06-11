@@ -16,7 +16,7 @@ Det finns **två sätt** att köra systemet. De delar **inte** databas med varan
 
 ### 🖥️ JavaFX-appen (lokal desktop)
 - **Databas:** SQLite — filen `biltuthyrning.db` på din lokala dator
-- **Starta:** Kör `run.bat` i projektmappen. Kräver Java 21+ och JavaFX SDK (sökväg konfigureras i `run.bat`).
+- **Starta:** Kör `run.bat` (eller `mvn javafx:run`). Kräver Java 17+ och Maven — JavaFX hanteras automatiskt av Maven.
 - Inloggning: **admin** / **admin123**
 
 ---
@@ -131,6 +131,7 @@ Det finns **två sätt** att köra systemet. De delar **inte** databas med varan
 | DELETE | `/api/bookings/{id}` | Avboka |
 | GET | `/api/bookings/cars/{carId}/availability` | Kontrollera tillgänglighet |
 | GET | `/api/cars` | Hämta alla bilar |
+| GET | `/health` | Hälsokontroll för UptimeRobot (returnerar HTTP 200 OK) |
 
 ## Databas
 
