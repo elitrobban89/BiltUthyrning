@@ -1,10 +1,25 @@
 # BilUthyrning
 Biluthyrningssystem byggt med JavaFX och Spring Boot.
 
-## Starta appen
-Kör `run.bat` i projektmappen. Kräver Java 21+ och JavaFX SDK (sökväg konfigureras i `run.bat`).
+---
 
-Standardinloggning: **admin** / **admin123**
+## ⚠️ Två versioner — två separata databaser
+
+Det finns **två sätt** att köra systemet. De delar **inte** databas med varandra — ändringar i ett system syns **inte** i det andra.
+
+### 🌐 Webbversion (live på internet)
+- **URL:** https://elitrobban.se/bilradgivning/
+- **Backend:** https://biltuthyrning.onrender.com
+- **Databas:** PostgreSQL i molnet (Render)
+- **Driftsatt via:** Docker på Render (byggs automatiskt vid push till `main`)
+- Inloggning: **admin** / **admin123**
+
+### 🖥️ JavaFX-appen (lokal desktop)
+- **Databas:** SQLite — filen `biltuthyrning.db` på din lokala dator
+- **Starta:** Kör `run.bat` i projektmappen. Kräver Java 21+ och JavaFX SDK (sökväg konfigureras i `run.bat`).
+- Inloggning: **admin** / **admin123**
+
+---
 
 ---
 
@@ -80,9 +95,15 @@ Standardinloggning: **admin** / **admin123**
 | Initiering | `DataInitializer`, `BiltUthyrningApplication` |
 
 ## Teknikstack
-- **Java 21** / **JavaFX 21**
-- **Spring Boot 3.x** (Web, Data JPA)
-- **SQLite** via `sqlite-jdbc` + Hibernate Community Dialects
+
+| | JavaFX (lokal) | Webb (Render) |
+|---|---|---|
+| Databas | SQLite (`biltuthyrning.db`) | PostgreSQL (moln) |
+| Bygge | `mvn javafx:run` / `run.bat` | Docker, `-P web` |
+| Profil | *(standard)* | `prod` |
+
+- **Java 17** / **JavaFX 21**
+- **Spring Boot 3.2.5** (Web, Data JPA, Security, Thymeleaf)
 - **Maven** för bygge och beroenden
 
 ## REST API
@@ -97,6 +118,14 @@ Standardinloggning: **admin** / **admin123**
 | GET | `/api/cars` | Hämta alla bilar |
 
 ## Databas
+
+### Lokal (JavaFX)
 - Fil: `biltuthyrning.db` (SQLite, skapas automatiskt vid start)
-- Tabeller: `cars`, `bookings`, `users`
-- `spring.jpa.hibernate.ddl-auto=update` — schemat uppdateras automatiskt
+- Konfiguration: `src/main/resources/application.properties`
+
+### Moln (Webb / Render)
+- PostgreSQL — connection string sätts via miljövariabeln `DATABASE_URL` i Render-dashboarden
+- Konfiguration: `src/main/resources/application-prod.properties`
+- Schema skapas automatiskt av Hibernate (`ddl-auto=update`)
+
+Tabeller (båda): `cars`, `bookings`, `users`
