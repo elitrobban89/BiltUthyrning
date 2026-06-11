@@ -21,6 +21,20 @@
         <span>🚗</span>
         <span class="header-title">BilUthyrning</span>
     </div>
+    <div class="header-stats">
+        <div class="header-stat">
+            <span class="hstat-val stat-accent" th:text="${#lists.size(cars)}">0</span>
+            <span class="hstat-label">bilar</span>
+        </div>
+        <div class="header-stat">
+            <span class="hstat-val stat-green" th:text="${activeBookings}">0</span>
+            <span class="hstat-label">aktiva</span>
+        </div>
+        <div class="header-stat">
+            <span class="hstat-val stat-purple" th:text="${totalRevenue + ' kr'}">0 kr</span>
+            <span class="hstat-label">intäkt</span>
+        </div>
+    </div>
     <div class="header-right">
         <span class="header-user">👤 <span th:text="${username}"></span></span>
         <form th:action="@{/logout}" method="post" style="display:inline">
@@ -77,22 +91,6 @@
 
     <!-- ── Right panel ── -->
     <div class="right-panel">
-
-        <!-- Stats row -->
-        <div class="stats-row">
-            <div class="stat-chip">
-                <span class="stat-label">Bilar</span>
-                <span class="stat-value stat-accent" th:text="${#lists.size(cars)}">0</span>
-            </div>
-            <div class="stat-chip">
-                <span class="stat-label">Aktiva bokningar</span>
-                <span class="stat-value stat-green" th:text="${activeBookings}">0</span>
-            </div>
-            <div class="stat-chip">
-                <span class="stat-label">Total intäkt</span>
-                <span class="stat-value stat-purple" th:text="${totalRevenue + ' kr'}">0 kr</span>
-            </div>
-        </div>
 
         <!-- Booking form -->
         <div class="card">

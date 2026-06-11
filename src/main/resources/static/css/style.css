@@ -18,7 +18,7 @@
 body {
     font-family: 'Space Grotesk', sans-serif;
     color: var(--text);
-    min-height: 100vh;
+    height: 100vh;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -184,6 +184,35 @@ body {
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
+.header-stats {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.header-stat {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 5px 12px;
+    backdrop-filter: var(--blur);
+    transition: border-color 0.2s;
+}
+.header-stat:hover { border-color: var(--accent); }
+.hstat-val {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.3px;
+}
+.hstat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
 .header-right { display: flex; align-items: center; gap: 14px; }
 .header-user  { font-size: 13px; color: var(--text-muted); font-weight: 500; }
 
@@ -220,7 +249,7 @@ body {
 .alert-error   { background: rgba(239,68,68,0.15);   color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
 
 /* ── Main layout ───────────────────────────────────────────── */
-.app-content { display: flex; flex: 1; overflow: hidden; }
+.app-content { display: flex; flex: 1; overflow: hidden; min-height: 0; }
 
 /* ── Left: car panel ───────────────────────────────────────── */
 .car-panel {
@@ -355,12 +384,13 @@ body {
 /* ── Right panel ───────────────────────────────────────────── */
 .right-panel {
     flex: 1;
-    padding: 18px;
+    padding: 14px 16px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
     overflow-y: auto;
     min-width: 0;
+    min-height: 0;
 }
 
 /* ── Cards ─────────────────────────────────────────────────── */
@@ -731,6 +761,5 @@ body {
     .right-panel { overflow-y: visible; }
     .bookings-card { min-height: unset; }
     .table-wrapper { overflow-x: auto; }
-    .stats-row { flex-wrap: wrap; }
-    .stat-chip { min-width: calc(50% - 6px); }
+    .header-stats { display: none; }
 }
