@@ -23,6 +23,18 @@ Det finns **två sätt** att köra systemet. De delar **inte** databas med varan
 
 ## Changelog
 
+### UI-polish + layout-fix + auto-rensning (2026-06-11)
+- **Aurora-bakgrund** — 3 animerade färgblobbar (blå, lila, cyan) bakom hela appen, rör sig sakta i loop
+- **Space Grotesk** ersätter Inter — skarpare och mer karakteristisk font
+- **Staggerade entrance-animationer** — header, bilkort och höger panel glider in vid sidladdning
+- **Shimmer-effekt** på primärknapp vid hover — vit reflex sveper igenom
+- **Gradient-text** på logotyp och inloggningsrubrik
+- **Accentbar** framför korttitlar (3px blå linje med glow)
+- **Inloggningssidan polerad** — glödande logo-cirkel med pulsande ringar, tagline, bredare kort, accentlinje, subtil punktgrid i bakgrunden
+- **Stats i headern** — bilar / aktiva bokningar / total intäkt visas som chips i headerraden
+- **Alla bokningar rensas vid utloggning** — Spring Security `LogoutHandler` anropar `bookingService.deleteAllBookings()`
+- **Ingen sidscroll** — `body: height 100vh`, `min-height: 0` på flex-containrar, bokningstabell fyller kvarvarande höjd
+
 ### Glassmorphism redesign (2026-06-11)
 - Mörk gradient-bakgrund med blå/lila/cyan färgblobs
 - Frosted glass-effekt på alla kort, paneler och header (`backdrop-filter: blur`)
@@ -164,6 +176,6 @@ Tabeller (båda): `cars`, `bookings`, `users`
 | 2 | **Adminpanel** | Bilar kan inte läggas till/redigeras/tas bort via webbgränssnittet |
 | 3 | **Felsida** | Whitelabel Error Page visas vid fel — bör ersättas med egen sida |
 | 4 | **Laddningsindikator** | ✅ Åtgärdad — UptimeRobot pingar `/health` var 5:e min, Render sover aldrig. Spinner visas som fallback. |
-| 5 | **Paginering** | Bokningstabell saknar paginering — kan bli trög vid många bokningar |
+| 5 | **Paginering** | ✅ Åtgärdad — alla bokningar rensas automatiskt vid utloggning, tabellen hålls alltid kort |
 | 6 | **Datumfilter** | ✅ Åtgärdad — filtrering på kundnamn och datumintervall tillagt |
 | 7 | **Databas-expiry** | Render free-tier PostgreSQL raderas efter 90 dagar — bör säkerhetskopieras eller uppgraderas |
