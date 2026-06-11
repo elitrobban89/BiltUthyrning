@@ -25,6 +25,17 @@ Det finns **två sätt** att köra systemet. De delar **inte** databas med varan
 
 ## Changelog
 
+### Webb-UI redesign (2026-06-11)
+- Nytt typsnitt: **Inter** (Google Fonts) — skarpare och modernare
+- Header med blå gradient (`#1a365d → #2b6cb0`)
+- Kort med mjukare skuggor och rundare hörn (12px)
+- Knappar med gradient och hover-animation (lyft + skugga)
+- Formulärfält med focus-glow (blå ring)
+- Priskortets bakgrund i blå gradient
+- Statusknappar i Bekräftad/Avbokad/Avslutad — uppdaterade färger
+- Inloggningssidan fick blå gradient-bakgrund
+- Responsiv layout — panelerna staplas vertikalt under 960px bredd
+
 ### Tre nya bilar i flottan (2026-06-04)
 - **Volvo EX30 Twin Motor** (2024) — El 315 kW Twin Motor — 1 099 kr/dag — teal-grön färg + EV ⚡-badge
 - **Volvo V60 B6** (2023) — 3.0L B6 Bensin + dragkrok — 1 199 kr/dag — burgunder-röd kombiprofil
