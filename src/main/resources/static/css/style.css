@@ -4,10 +4,11 @@ body {
     font-family: 'Segoe UI', Tahoma, sans-serif;
     background: #EEF2F7;
     color: #2C3E50;
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    min-width: 800px;
 }
 
 /* ── Header ────────────────────────────────────────────── */
@@ -17,7 +18,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 14px 22px;
+    padding: 14px 32px;
     flex-shrink: 0;
 }
 .header-left {
@@ -67,9 +68,9 @@ body {
 
 /* ── Left: car panel ────────────────────────────────────── */
 .car-panel {
-    width: 40%;
-    min-width: 280px;
-    padding: 14px;
+    width: 38%;
+    min-width: 320px;
+    padding: 16px;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -163,11 +164,12 @@ body {
 /* ── Right panel ────────────────────────────────────────── */
 .right-panel {
     flex: 1;
-    padding: 14px;
+    padding: 16px;
     display: flex;
     flex-direction: column;
     gap: 14px;
     overflow-y: auto;
+    min-width: 0;
 }
 
 /* ── Cards ──────────────────────────────────────────────── */
@@ -348,3 +350,38 @@ body {
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #C5CAD3; border-radius: 3px; }
+
+/* ── Responsive: stack panels vertically on narrow screens ── */
+@media (max-width: 960px) {
+    body {
+        height: auto;
+        min-height: 100vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+        min-width: unset;
+    }
+    .app-content {
+        flex-direction: column;
+        overflow: visible;
+        height: auto;
+    }
+    .car-panel {
+        width: 100%;
+        min-width: unset;
+        border-right: none;
+        border-bottom: 1px solid #D5DCE8;
+        overflow: visible;
+    }
+    .car-list {
+        max-height: 320px;
+    }
+    .right-panel {
+        overflow-y: visible;
+    }
+    .bookings-card {
+        min-height: unset;
+    }
+    .table-wrapper {
+        overflow-x: auto;
+    }
+}
