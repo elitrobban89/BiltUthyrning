@@ -26,6 +26,12 @@ Det finns **två sätt** att köra systemet. De delar **inte** databas med varan
 
 ## Changelog
 
+### Unika modellnamn i flottan (2026-07-18)
+- EV-listan har två varianter med visningsnamnet "Rolls-Royce Spectre Series II" → flottan
+  fick två identiska bilar. `selectSpread` dedupar nu på modellnamn, och boten städar bort
+  befintliga dubbletter vid boot (äldsta raden behålls, bilar med bokningar rörs aldrig)
+  och fyller upp till 100 med nästa unika kandidat. 67 tester.
+
 ### Ultralyx-prisnivå + omprisning vid boot (2026-07-18)
 - Rolls-Royce Spectre hyrdes ut för 1 099 kr/dag — ultralyxmärken (Rolls-Royce, Bentley,
   Ferrari, Lamborghini, Aston, McLaren m.fl.) får nu +2 500 kr i stället för premiumens +250 kr
@@ -190,14 +196,14 @@ Flottan består av två delar:
 
 ## Tester & CI
 
-66 tester i tre lager — ren logik, HTTP-felvägar mot lokal stubbserver och controller-lagret (MockMvc, tjänsterna mockas):
+67 tester i tre lager — ren logik, HTTP-felvägar mot lokal stubbserver och controller-lagret (MockMvc, tjänsterna mockas):
 
 | Testklass | Täcker |
 |---|---|
 | `BookingServiceTest` (21) | Tillgänglighet, prisberäkning, bokningslivscykel (skapa/avboka/avsluta), batch-tillgänglighet för hela flottan |
 | `BookingRepositoryTest` (11) | Integrationstester mot SQLite in-memory: överlappsquery för konflikter, statusfiltrering |
 | `UserServiceTest` (10) | Registrering, lösenordshashning, valideringar |
-| `FleetSyncServiceTest` (8) | Delade flottan: JSON-parsning av EV/ICE-listor, svensk decimalformatering, deterministisk prisheuristik med premium- och ultralyxpåslag, drivlina ur motorfältet, märkesspridning och limit |
+| `FleetSyncServiceTest` (9) | Delade flottan: JSON-parsning av EV/ICE-listor, svensk decimalformatering, deterministisk prisheuristik med premium- och ultralyxpåslag, drivlina ur motorfältet, märkesspridning, namn-dedup och limit |
 | `WebControllerTest` (5) | MockMvc: dashboardens statistik (avbokade exkluderas ur intäkt), health, boknings-flash (lyckad + uppbokad), registrering |
 | `BookingControllerTest` (3) | MockMvc: batch-tillgänglighet som JSON-karta, per-bil-tillgänglighet, bokningslistan |
 | `FleetSyncServiceHttpTest` (3) | HTTP-felvägar mot lokal stubbserver: lyckad hämtning, 500 → tom lista utan exception, limit 0 anropar aldrig nätet |

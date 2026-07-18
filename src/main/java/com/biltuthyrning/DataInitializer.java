@@ -70,14 +70,30 @@ public class DataInitializer {
                     }
                 });
 
+            // Ta bort dubbletter bland delade bilar (samma modellnamn) — behåll äldsta raden,
+            // rör aldrig en bil som har bokningar
+            carRepository.findAll().stream()
+                .filter(c -> "–".equals(c.getYear()))
+                .sorted(java.util.Comparator.comparing(Car::getId))
+                .collect(Collectors.groupingBy(c -> c.getModel().toLowerCase(),
+                    java.util.LinkedHashMap::new, Collectors.toList()))
+                .values().stream()
+                .filter(group -> group.size() > 1)
+                .forEach(group -> group.stream().skip(1)
+                    .filter(c -> bookingRepository.findByCar_Id(c.getId()).isEmpty())
+                    .forEach(carRepository::delete));
+
             long count = carRepository.count();
             if (count < FLEET_TARGET) {
                 List<String> existing = carRepository.findAll().stream()
                     .map(c -> c.getModel().toLowerCase())
                     .toList();
-                fleetSyncService.fetchSharedFleet(FLEET_TARGET - (int) count).stream()
+                // Hämta hela urvalet (inte bara mellanskillnaden) — de första kandidaterna
+                // finns redan i DB, så ett litet fetch skulle bara ge redan sparade bilar
+                fleetSyncService.fetchSharedFleet(FLEET_TARGET).stream()
                     .filter(c -> existing.stream().noneMatch(m ->
                         m.contains(c.getModel().toLowerCase()) || c.getModel().toLowerCase().contains(m)))
+                    .limit(FLEET_TARGET - count)
                     .forEach(carRepository::save);
             }
 

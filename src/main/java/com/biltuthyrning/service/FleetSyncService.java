@@ -125,6 +125,7 @@ public class FleetSyncService {
     static List<Car> selectSpread(List<Car> evs, List<Car> ices, int limit) {
         List<Car> result = new ArrayList<>();
         Map<String, Integer> perBrand = new HashMap<>();
+        java.util.Set<String> seenNames = new java.util.HashSet<>();
         int i = 0, j = 0;
         boolean evTurn = true;
         while (result.size() < limit && (i < evs.size() || j < ices.size())) {
@@ -134,6 +135,10 @@ public class FleetSyncService {
             else if (i < evs.size()) candidate = evs.get(i++);
             else candidate = ices.get(j++);
             evTurn = !evTurn;
+
+            // EV-listan kan ha två varianter med samma visningsnamn (Rolls-Royce Spectre
+            // Series II fanns dubbelt i flottan) — varje modellnamn får bara förekomma en gång
+            if (!seenNames.add(candidate.getModel().toLowerCase(Locale.ROOT))) continue;
 
             String brand = brandOf(candidate.getModel());
             int seen = perBrand.getOrDefault(brand, 0);

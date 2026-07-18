@@ -96,6 +96,16 @@ class FleetSyncServiceTest {
     }
 
     @Test
+    void selectSpreadHopparOverDubbladeModellnamn() {
+        // EV-listan hade två varianter med visningsnamnet Rolls-Royce Spectre Series II
+        List<Car> evs = List.of(ev("Rolls-Royce Spectre Series II"),
+                ev("Rolls-Royce Spectre Series II"), ev("Kia EV6"));
+        List<Car> fleet = FleetSyncService.selectSpread(evs, List.of(), 10);
+        assertThat(fleet).extracting(Car::getModel)
+                .containsExactly("Rolls-Royce Spectre Series II", "Kia EV6");
+    }
+
+    @Test
     void selectSpreadRespekterarLimit() {
         List<Car> evs = List.of(ev("Tesla Model 3"), ev("Kia EV6"), ev("Volvo EX30"));
         List<Car> ices = List.of(ice("Skoda Octavia"), ice("Toyota Yaris"));
