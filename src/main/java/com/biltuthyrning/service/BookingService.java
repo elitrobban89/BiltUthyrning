@@ -10,6 +10,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class BookingService {
@@ -25,6 +28,21 @@ public class BookingService {
     public boolean isCarAvailable(Long carId, LocalDate startDate, LocalDate endDate) {
         List<Booking> conflicts = bookingRepository.findConflictingBookings(carId, startDate, endDate);
         return conflicts.isEmpty();
+    }
+
+    /**
+     * Tillgänglighet för HELA flottan i ett svar — dashboarden gjorde tidigare ett
+     * HTTP-anrop per bil, ohållbart med ~100 bilar mot en pool på 3 anslutningar.
+     * Samma överlappsregel som findConflictingBookings: CONFIRMED och start <= end.
+     */
+    public Map<Long, Boolean> availabilityForAll(LocalDate startDate, LocalDate endDate) {
+        Set<Long> busy = bookingRepository.findAll().stream()
+            .filter(b -> b.getStatus() == Booking.BookingStatus.CONFIRMED)
+            .filter(b -> !b.getStartDate().isAfter(endDate) && !b.getEndDate().isBefore(startDate))
+            .map(b -> b.getCar().getId())
+            .collect(Collectors.toSet());
+        return carRepository.findAll().stream()
+            .collect(Collectors.toMap(Car::getId, c -> !busy.contains(c.getId())));
     }
     
     public BigDecimal calculateTotalPrice(Long carId, LocalDate startDate, LocalDate endDate) {

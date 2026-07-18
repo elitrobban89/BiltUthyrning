@@ -6,6 +6,7 @@ import com.biltuthyrning.model.User;
 import com.biltuthyrning.repository.BookingRepository;
 import com.biltuthyrning.repository.CarRepository;
 import com.biltuthyrning.repository.UserRepository;
+import com.biltuthyrning.service.FleetSyncService;
 import com.biltuthyrning.service.UserService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -20,9 +21,13 @@ import java.util.stream.Collectors;
 @Configuration
 public class DataInitializer {
 
+    /** Målstorlek för flottan — basflottan (10 Volvo) fylls upp med bilar ur den delade databasen. */
+    static final int FLEET_TARGET = 100;
+
     @Bean
     public CommandLineRunner initializeData(CarRepository carRepository, BookingRepository bookingRepository,
-                                            UserRepository userRepository, UserService userService) {
+                                            UserRepository userRepository, UserService userService,
+                                            FleetSyncService fleetSyncService) {
         return args -> {
             if (userRepository.count() == 0) {
                 User admin = new User();
@@ -52,6 +57,17 @@ public class DataInitializer {
             fleet.stream()
                 .filter(c -> !existingModels.contains(c.getModel()))
                 .forEach(carRepository::save);
+
+            long count = carRepository.count();
+            if (count < FLEET_TARGET) {
+                List<String> existing = carRepository.findAll().stream()
+                    .map(c -> c.getModel().toLowerCase())
+                    .toList();
+                fleetSyncService.fetchSharedFleet(FLEET_TARGET - (int) count).stream()
+                    .filter(c -> existing.stream().noneMatch(m ->
+                        m.contains(c.getModel().toLowerCase()) || c.getModel().toLowerCase().contains(m)))
+                    .forEach(carRepository::save);
+            }
 
             if (bookingRepository.count() == 0) {
                 Car xc40 = carRepository.findAll().stream()

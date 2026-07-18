@@ -1,4 +1,7 @@
 # BilUthyrning
+
+![Build & Test](https://github.com/elitrobban89/BiltUthyrning/actions/workflows/maven.yml/badge.svg)
+
 Biluthyrningssystem byggt med JavaFX och Spring Boot.
 
 ---
@@ -22,6 +25,17 @@ Det finns **två sätt** att köra systemet. De delar **inte** databas med varan
 ---
 
 ## Changelog
+
+### Delad flotta från CarAdvice + tester & CI (2026-07-18)
+- **`FleetSyncService`**: flottan fylls vid start upp till 100 bilar ur CarAdvice-backendens
+  publika API:er — verifierad förbrukning i motorfältet, max 2 per märke, deterministiska
+  demo-priser, fail-silent vid API-fel
+- **Batch-tillgänglighet**: `GET /api/bookings/availability` svarar för hela flottan i ett
+  anrop (dashboarden gjorde ett anrop per bil — ohållbart med ~100 bilar mot en pool på 3)
+- **Buggfix**: EV/PHEV-badgen styrs nu av motorfältet, inte modellnamnet ("Lexus" innehåller "EX")
+- Drivmedelsfiltret utökat med Diesel och Hybrid; deterministisk färgpalett för nya märken
+- **Tester & CI**: 64 tester (24 nya: FleetSync-logik + HTTP-stubb, MockMvc för alla
+  controllers, CarUtils) + GitHub Actions-workflow med badge
 
 ### UI-polish + layout-fix + auto-rensning (2026-06-11)
 - **Aurora-bakgrund** — 3 animerade färgblobbar (blå, lila, cyan) bakom hela appen, rör sig sakta i loop
@@ -103,6 +117,17 @@ Det finns **två sätt** att köra systemet. De delar **inte** databas med varan
 
 ## Bilflotta
 
+Flottan består av två delar:
+
+1. **Kurerad basflotta** — 10 Volvo-modeller med handsatta priser (tabellen nedan).
+2. **Delad flotta från CarAdvice** — vid start fylls flottan upp till **100 bilar** ur
+   CarAdvice-backendens publika API:er (`/api/ev-consumption` + `/api/ice-consumption`,
+   samma databas som Bilresa-kalkylatorn konsumerar). `FleetSyncService` blandar el och
+   fossilt varannan bil, tar max 2 per märke och sätter deterministiska demo-dagspriser
+   (bas per drivlina + premiumpåslag + hashvariation per namn). Motorfältet får bilens
+   **verifierade förbrukning** (t.ex. `El · 1,55 kWh/mil`, `Diesel · 0,62 l/mil`).
+   Fail-silent: är CarAdvice nere behålls basflottan som den är.
+
 | Modell | År | Motor | Pris/dag |
 |---|---|---|---|
 | Volvo XC40 | 2023 | B4 AWD | 899 kr |
@@ -123,7 +148,7 @@ Det finns **två sätt** att köra systemet. De delar **inte** databas med varan
 | Lager | Klasser |
 |---|---|
 | GUI | `CarRentalGUI`, `LoginGUI` |
-| Tjänster | `CarService`, `BookingService`, `UserService` |
+| Tjänster | `CarService`, `BookingService`, `UserService`, `FleetSyncService` |
 | Modell | `Car`, `Booking`, `User` |
 | Repository | `CarRepository`, `BookingRepository`, `UserRepository` |
 | REST API | `CarController`, `BookingController` |
@@ -149,9 +174,28 @@ Det finns **två sätt** att köra systemet. De delar **inte** databas med varan
 | GET | `/api/bookings/{id}` | Hämta bokning |
 | POST | `/api/bookings` | Skapa bokning |
 | DELETE | `/api/bookings/{id}` | Avboka |
-| GET | `/api/bookings/cars/{carId}/availability` | Kontrollera tillgänglighet |
+| GET | `/api/bookings/cars/{carId}/availability` | Kontrollera tillgänglighet för en bil |
+| GET | `/api/bookings/availability?start=&end=` | Tillgänglighet för HELA flottan i ett svar (karta bil-id → ledig) — dashboarden gjorde tidigare ett anrop per bil, ohållbart med ~100 bilar |
 | GET | `/api/cars` | Hämta alla bilar |
 | GET | `/health` | Hälsokontroll för UptimeRobot (returnerar HTTP 200 OK) |
+
+## Tester & CI
+
+64 tester i tre lager — ren logik, HTTP-felvägar mot lokal stubbserver och controller-lagret (MockMvc, tjänsterna mockas):
+
+| Testklass | Täcker |
+|---|---|
+| `BookingServiceTest` (21) | Tillgänglighet, prisberäkning, bokningslivscykel (skapa/avboka/avsluta), batch-tillgänglighet för hela flottan |
+| `BookingRepositoryTest` (11) | Integrationstester mot SQLite in-memory: överlappsquery för konflikter, statusfiltrering |
+| `UserServiceTest` (10) | Registrering, lösenordshashning, valideringar |
+| `FleetSyncServiceTest` (6) | Delade flottan: JSON-parsning av EV/ICE-listor, svensk decimalformatering, deterministisk prisheuristik med premiumpåslag, märkesspridning och limit |
+| `WebControllerTest` (5) | MockMvc: dashboardens statistik (avbokade exkluderas ur intäkt), health, boknings-flash (lyckad + uppbokad), registrering |
+| `BookingControllerTest` (3) | MockMvc: batch-tillgänglighet som JSON-karta, per-bil-tillgänglighet, bokningslistan |
+| `FleetSyncServiceHttpTest` (3) | HTTP-felvägar mot lokal stubbserver: lyckad hämtning, 500 → tom lista utan exception, limit 0 anropar aldrig nätet |
+| `CarUtilsTest` (3) | EV/PHEV-badge styrs av motorfält (Lexus-fällan), fem drivmedelstyper, deterministisk färgpalett |
+| `CarControllerTest` (2) | MockMvc: flottan som JSON med förbrukning i motorfältet, enskild bil |
+
+GitHub Actions ([maven.yml](.github/workflows/maven.yml)) kör testerna på varje push — badgen överst visar status.
 
 ## Databas
 

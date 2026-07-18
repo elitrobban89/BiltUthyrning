@@ -44,6 +44,14 @@ public class BookingController {
         bookingService.cancelBooking(id);
     }
     
+    @GetMapping("/availability")
+    public Map<Long, Boolean> checkAllAvailability(
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end
+    ) {
+        return bookingService.availabilityForAll(start, end);
+    }
+
     @GetMapping("/cars/{carId}/availability")
     public Map<String, Object> checkAvailability(
         @PathVariable Long carId,

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
@@ -24,6 +24,9 @@
         <java.version>17</java.version>
         <javafx.version>21</javafx.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- JDK 25 lokalt: Boot 3.2:s Mockito/Byte Buddy klarar inte att mocka konkreta klasser -->
+        <mockito.version>5.23.0</mockito.version>
+        <byte-buddy.version>1.17.7</byte-buddy.version>
     </properties>
 
     <dependencies>
@@ -51,7 +54,7 @@
             <artifactId>thymeleaf-extras-springsecurity6</artifactId>
         </dependency>
 
-        <!-- JavaFX (desktop only — excluded from web/Docker build via -P web) -->
+        <!-- JavaFX (desktop only â€” excluded from web/Docker build via -P web) -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-base</artifactId>
@@ -113,7 +116,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <!-- Web entry point — JavaFX runs via IDE or mvn javafx:run -->
+                    <!-- Web entry point â€” JavaFX runs via IDE or mvn javafx:run -->
                     <mainClass>com.biltuthyrning.BiltUthyrningApplication</mainClass>
                 </configuration>
             </plugin>
@@ -148,3 +151,4 @@
         </profile>
     </profiles>
 </project>
+

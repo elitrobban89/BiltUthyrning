@@ -90,26 +90,30 @@ function updatePrice() {
     updateAllAvailability(start, end);
 }
 
-/* ── Per-car availability badges in the list ── */
+/* ── Per-car availability badges in the list ──
+   En enda batch-request för hela flottan — ett anrop per bil skalar inte
+   med ~100 bilar mot en databaspool på 3 anslutningar. */
 function updateAllAvailability(start, end) {
-    document.querySelectorAll('.car-card').forEach(card => {
+    const cards = document.querySelectorAll('.car-card');
+    const clear = card => {
         const avail = document.getElementById('avail-' + card.dataset.carId);
-        if (!avail) return;
-        if (!start || !end) { avail.textContent = ''; avail.className = 'car-availability'; return; }
+        if (avail) { avail.textContent = ''; avail.className = 'car-availability'; }
+    };
+    if (!start || !end) { cards.forEach(clear); return; }
 
-        fetch(`/api/bookings/cars/${card.dataset.carId}/availability?start=${start}&end=${end}`)
-            .then(r => r.json())
-            .then(data => {
-                if (data.available) {
-                    avail.textContent = '● Ledig';
-                    avail.className   = 'car-availability avail-ok';
-                } else {
-                    avail.textContent = '● Uppbokad';
-                    avail.className   = 'car-availability avail-busy';
-                }
-            })
-            .catch(() => { avail.textContent = ''; avail.className = 'car-availability'; });
-    });
+    fetch(`/api/bookings/availability?start=${start}&end=${end}`)
+        .then(r => r.json())
+        .then(map => {
+            cards.forEach(card => {
+                const avail = document.getElementById('avail-' + card.dataset.carId);
+                if (!avail) return;
+                const free = map[card.dataset.carId];
+                if (free === undefined) { clear(card); return; }
+                avail.textContent = free ? '● Ledig' : '● Uppbokad';
+                avail.className   = 'car-availability ' + (free ? 'avail-ok' : 'avail-busy');
+            });
+        })
+        .catch(() => cards.forEach(clear));
 }
 
 /* ── Booking table filters (status + kund + datum) ── */

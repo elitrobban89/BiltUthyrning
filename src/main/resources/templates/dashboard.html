@@ -59,6 +59,8 @@
         <div class="filter-row">
             <button class="filter-btn active" onclick="filterCars('Alla', this)">Alla</button>
             <button class="filter-btn"        onclick="filterCars('Bensin', this)">⛽ Bensin</button>
+            <button class="filter-btn"        onclick="filterCars('Diesel', this)">🛢️ Diesel</button>
+            <button class="filter-btn"        onclick="filterCars('Hybrid', this)">♻️ Hybrid</button>
             <button class="filter-btn"        onclick="filterCars('Laddhybrid', this)">🔌 Laddhybrid</button>
             <button class="filter-btn"        onclick="filterCars('El', this)">⚡ El</button>
         </div>
@@ -73,13 +75,13 @@
 
                 <div class="car-badge-strip"
                      th:style="'background-color:' + ${@carUtils.getBadgeColor(car.model)}">
-                    <span class="car-ev-badge" th:text="${@carUtils.getEVBadge(car.model)}"></span>
+                    <span class="car-ev-badge" th:text="${@carUtils.getEVBadge(car.engine)}"></span>
                     <span class="car-icon">🚗</span>
                 </div>
 
                 <div class="car-info">
                     <div class="car-name"   th:text="${car.model}"></div>
-                    <div class="car-detail" th:text="${car.year + ' · ' + car.engine}"></div>
+                    <div class="car-detail" th:text="${car.year == '–' ? car.engine : car.year + ' · ' + car.engine}"></div>
                     <div class="car-availability" th:id="'avail-' + ${car.id}"></div>
                 </div>
 

@@ -62,6 +62,43 @@ class BookingServiceTest {
         assertThat(bookingService.isCarAvailable(1L, START, END)).isFalse();
     }
 
+    // ── availabilityForAll (batch) ────────────────────────────────────────────
+
+    @Test
+    void availabilityForAll_marksOverlappingConfirmedAsBusy() {
+        Car car2 = new Car("Volvo S90", "2023", "B5 AWD", new BigDecimal("1299.00"));
+        car2.setId(2L);
+        Booking confirmed = new Booking();
+        confirmed.setCar(car);
+        confirmed.setStartDate(START.plusDays(1));
+        confirmed.setEndDate(END.plusDays(1));
+        confirmed.setStatus(Booking.BookingStatus.CONFIRMED);
+        when(bookingRepository.findAll()).thenReturn(List.of(confirmed));
+        when(carRepository.findAll()).thenReturn(List.of(car, car2));
+
+        var map = bookingService.availabilityForAll(START, END);
+
+        assertThat(map).containsEntry(1L, false).containsEntry(2L, true);
+    }
+
+    @Test
+    void availabilityForAll_ignoresCancelledAndNonOverlapping() {
+        Booking cancelled = new Booking();
+        cancelled.setCar(car);
+        cancelled.setStartDate(START);
+        cancelled.setEndDate(END);
+        cancelled.setStatus(Booking.BookingStatus.CANCELLED);
+        Booking farAway = new Booking();
+        farAway.setCar(car);
+        farAway.setStartDate(END.plusDays(10));
+        farAway.setEndDate(END.plusDays(12));
+        farAway.setStatus(Booking.BookingStatus.CONFIRMED);
+        when(bookingRepository.findAll()).thenReturn(List.of(cancelled, farAway));
+        when(carRepository.findAll()).thenReturn(List.of(car));
+
+        assertThat(bookingService.availabilityForAll(START, END)).containsEntry(1L, true);
+    }
+
     // ── calculateTotalPrice ───────────────────────────────────────────────────
 
     @Test
