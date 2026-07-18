@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="sv" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>BilUthyrning – Något gick fel</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body class="auth-page">
+<div class="aurora-bg" aria-hidden="true">
+    <span class="blob blob-1"></span>
+    <span class="blob blob-2"></span>
+    <span class="blob blob-3"></span>
+</div>
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-logo">
+                <div class="logo-bg"></div>
+                <span class="auth-icon">🚧</span>
+            </div>
+            <h1>Något gick fel</h1>
+            <p class="auth-tagline">
+                <span th:text="${status} ?: 'Fel'">Fel</span> ·
+                <span th:text="${error} ?: 'Oväntat fel'">Oväntat fel</span>
+            </p>
+        </div>
+        <p style="text-align:center; margin:1rem 0; opacity:.8">
+            Sidan kunde inte visas. Din session kan ha gått ut.
+        </p>
+        <a href="/" class="btn-primary" style="display:block; text-align:center; text-decoration:none">
+            ← Till startsidan
+        </a>
+    </div>
+</div>
+</body>
+</html>

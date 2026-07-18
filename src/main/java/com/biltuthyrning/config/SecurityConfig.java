@@ -40,8 +40,10 @@ public class SecurityConfig {
                 .addLogoutHandler((request, response, authentication) -> bookingService.deleteAllBookings())
                 .logoutSuccessUrl("/login?logout")
             )
+            // /logout undantas: efter en omdeploy är sessionens CSRF-token död och
+            // utloggnings-POST:en gav 403 Whitelabel i stället för att logga ut
             .csrf(csrf -> csrf
-                .ignoringRequestMatchers("/api/**")
+                .ignoringRequestMatchers("/api/**", "/logout")
             )
             .headers(headers -> headers
                 .frameOptions(frameOptions -> frameOptions.disable())
