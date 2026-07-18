@@ -58,6 +58,18 @@ public class DataInitializer {
                 .filter(c -> !existingModels.contains(c.getModel()))
                 .forEach(carRepository::save);
 
+            // Omprisa delade bilar (year "–") vid boot så heuristikändringar når befintliga rader
+            carRepository.findAll().stream()
+                .filter(c -> "–".equals(c.getYear()))
+                .forEach(c -> {
+                    var rate = FleetSyncService.priceFor(c.getModel(),
+                        FleetSyncService.fuelFromEngine(c.getEngine()));
+                    if (c.getDailyRate().compareTo(rate) != 0) {
+                        c.setDailyRate(rate);
+                        carRepository.save(c);
+                    }
+                });
+
             long count = carRepository.count();
             if (count < FLEET_TARGET) {
                 List<String> existing = carRepository.findAll().stream()

@@ -26,6 +26,13 @@ Det finns **två sätt** att köra systemet. De delar **inte** databas med varan
 
 ## Changelog
 
+### Ultralyx-prisnivå + omprisning vid boot (2026-07-18)
+- Rolls-Royce Spectre hyrdes ut för 1 099 kr/dag — ultralyxmärken (Rolls-Royce, Bentley,
+  Ferrari, Lamborghini, Aston, McLaren m.fl.) får nu +2 500 kr i stället för premiumens +250 kr
+- Delade bilar (år "–") omprisas vid varje boot utifrån aktuell heuristik — prisändringar
+  når därmed befintliga databasrader utan manuell migrering
+- 66 tester (2 nya: ultralyxnivån, drivlina ur motorfältet)
+
 ### Delad flotta från CarAdvice + tester & CI (2026-07-18)
 - **`FleetSyncService`**: flottan fylls vid start upp till 100 bilar ur CarAdvice-backendens
   publika API:er — verifierad förbrukning i motorfältet, max 2 per märke, deterministiska
@@ -124,7 +131,9 @@ Flottan består av två delar:
    CarAdvice-backendens publika API:er (`/api/ev-consumption` + `/api/ice-consumption`,
    samma databas som Bilresa-kalkylatorn konsumerar). `FleetSyncService` blandar el och
    fossilt varannan bil, tar max 2 per märke och sätter deterministiska demo-dagspriser
-   (bas per drivlina + premiumpåslag + hashvariation per namn). Motorfältet får bilens
+   (bas per drivlina + premiumpåslag 250 kr eller ultralyxpåslag 2 500 kr för
+   Rolls-Royce/Bentley/Ferrari m.fl. + hashvariation per namn; delade bilar omprisas
+   vid varje boot så heuristikändringar når befintliga rader). Motorfältet får bilens
    **verifierade förbrukning** (t.ex. `El · 1,55 kWh/mil`, `Diesel · 0,62 l/mil`).
    Fail-silent: är CarAdvice nere behålls basflottan som den är.
 
@@ -181,14 +190,14 @@ Flottan består av två delar:
 
 ## Tester & CI
 
-64 tester i tre lager — ren logik, HTTP-felvägar mot lokal stubbserver och controller-lagret (MockMvc, tjänsterna mockas):
+66 tester i tre lager — ren logik, HTTP-felvägar mot lokal stubbserver och controller-lagret (MockMvc, tjänsterna mockas):
 
 | Testklass | Täcker |
 |---|---|
 | `BookingServiceTest` (21) | Tillgänglighet, prisberäkning, bokningslivscykel (skapa/avboka/avsluta), batch-tillgänglighet för hela flottan |
 | `BookingRepositoryTest` (11) | Integrationstester mot SQLite in-memory: överlappsquery för konflikter, statusfiltrering |
 | `UserServiceTest` (10) | Registrering, lösenordshashning, valideringar |
-| `FleetSyncServiceTest` (6) | Delade flottan: JSON-parsning av EV/ICE-listor, svensk decimalformatering, deterministisk prisheuristik med premiumpåslag, märkesspridning och limit |
+| `FleetSyncServiceTest` (8) | Delade flottan: JSON-parsning av EV/ICE-listor, svensk decimalformatering, deterministisk prisheuristik med premium- och ultralyxpåslag, drivlina ur motorfältet, märkesspridning och limit |
 | `WebControllerTest` (5) | MockMvc: dashboardens statistik (avbokade exkluderas ur intäkt), health, boknings-flash (lyckad + uppbokad), registrering |
 | `BookingControllerTest` (3) | MockMvc: batch-tillgänglighet som JSON-karta, per-bil-tillgänglighet, bokningslistan |
 | `FleetSyncServiceHttpTest` (3) | HTTP-felvägar mot lokal stubbserver: lyckad hämtning, 500 → tom lista utan exception, limit 0 anropar aldrig nätet |

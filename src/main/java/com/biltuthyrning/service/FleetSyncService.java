@@ -40,6 +40,11 @@ public class FleetSyncService {
             "audi", "bmw", "mercedes", "mercedes-benz", "porsche", "tesla", "polestar",
             "volvo", "lexus", "jaguar", "land", "genesis", "maserati", "lotus");
 
+    // Ultralyx: utan egen prisnivå hyrdes Rolls-Royce Spectre ut för 1 099 kr/dag
+    private static final Set<String> ULTRA_LUXURY_BRANDS = Set.of(
+            "rolls-royce", "bentley", "ferrari", "lamborghini", "aston", "mclaren",
+            "maybach", "bugatti", "koenigsegg");
+
     @Value("${caradvice.api.url:https://caradvice.onrender.com}")
     private String apiUrl;
 
@@ -139,8 +144,8 @@ public class FleetSyncService {
         return result;
     }
 
-    /** Demo-dagspris: bas per drivlina + premiumpåslag + deterministisk variation per namn. */
-    static BigDecimal priceFor(String name, String fuel) {
+    /** Demo-dagspris: bas per drivlina + premium-/ultralyxpåslag + deterministisk variation per namn. */
+    public static BigDecimal priceFor(String name, String fuel) {
         int base = switch (fuel) {
             case "elbil" -> 999;
             case "laddhybrid" -> 1049;
@@ -148,9 +153,21 @@ public class FleetSyncService {
             case "diesel" -> 899;
             default -> 849;
         };
-        if (PREMIUM_BRANDS.contains(brandOf(name))) base += 250;
+        String brand = brandOf(name);
+        if (ULTRA_LUXURY_BRANDS.contains(brand)) base += 2500;
+        else if (PREMIUM_BRANDS.contains(brand)) base += 250;
         base += Math.abs(name.hashCode() % 6) * 50;
         return new BigDecimal(base + ".00");
+    }
+
+    /** Drivlina ur motorfältet på en delad bil ("El · 1,55 kWh/mil" → elbil) — för omprisning vid boot. */
+    public static String fuelFromEngine(String engine) {
+        String e = engine.toLowerCase(Locale.ROOT);
+        if (e.startsWith("el")) return "elbil";
+        if (e.startsWith("laddhybrid")) return "laddhybrid";
+        if (e.startsWith("hybrid")) return "hybrid";
+        if (e.startsWith("diesel")) return "diesel";
+        return "bensin";
     }
 
     static String brandOf(String model) {

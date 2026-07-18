@@ -61,6 +61,27 @@ class FleetSyncServiceTest {
     }
 
     @Test
+    void ultralyxMarkenFarEgenPrisniva() {
+        // Rolls-Royce Spectre hyrdes ut för 1 099 kr/dag innan ultralyxnivån fanns
+        assertThat(FleetSyncService.priceFor("Rolls-Royce Spectre Series II", "elbil"))
+                .isGreaterThanOrEqualTo(new BigDecimal("3499.00"));
+        assertThat(FleetSyncService.priceFor("Bentley Continental GT", "bensin"))
+                .isGreaterThanOrEqualTo(new BigDecimal("3349.00"));
+        // ultralyx ersätter premiumpåslaget, staplas inte ovanpå
+        assertThat(FleetSyncService.priceFor("Rolls-Royce Spectre Series II", "elbil"))
+                .isLessThanOrEqualTo(new BigDecimal("3749.00"));
+    }
+
+    @Test
+    void drivlinaLasesUrMotorfaltet() {
+        assertThat(FleetSyncService.fuelFromEngine("El · 1,55 kWh/mil")).isEqualTo("elbil");
+        assertThat(FleetSyncService.fuelFromEngine("Diesel · 0,62 l/mil")).isEqualTo("diesel");
+        assertThat(FleetSyncService.fuelFromEngine("Laddhybrid · 0,12 l/mil")).isEqualTo("laddhybrid");
+        assertThat(FleetSyncService.fuelFromEngine("Hybrid · 0,45 l/mil")).isEqualTo("hybrid");
+        assertThat(FleetSyncService.fuelFromEngine("Bensin · 0,65 l/mil")).isEqualTo("bensin");
+    }
+
+    @Test
     void selectSpreadTarMaxTvaPerMarkeOchBlandarDrivlinor() {
         List<Car> evs = List.of(ev("Tesla Model 3"), ev("Tesla Model Y"), ev("Tesla Model S"),
                 ev("Kia EV6"));
