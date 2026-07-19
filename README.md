@@ -243,7 +243,7 @@ Tabeller (båda): `cars`, `bookings`, `users`
 |---|---|---|
 | 1 | **Säkerhet** | Lösenord hashas med SHA-256 utan salt — bör bytas till BCrypt |
 | 2 | **Adminpanel** | Bilar kan inte läggas till/redigeras/tas bort via webbgränssnittet |
-| 3 | **Felsida** | Whitelabel Error Page visas vid fel — bör ersättas med egen sida |
+| 3 | **Felsida** | ✅ Åtgärdad — egen `error.html` i aurora-stil ersätter Whitelabel (logout-403-fixen 2026-07-18) |
 | 4 | **Laddningsindikator** | ✅ Åtgärdad — UptimeRobot pingar `/health` var 5:e min, Render sover aldrig. Spinner visas som fallback. |
 | 5 | **Paginering** | ✅ Åtgärdad — alla bokningar rensas automatiskt vid utloggning, tabellen hålls alltid kort |
 | 6 | **Datumfilter** | ✅ Åtgärdad — filtrering på kundnamn och datumintervall tillagt |
