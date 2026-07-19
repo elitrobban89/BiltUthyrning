@@ -26,6 +26,16 @@ Det finns **två sätt** att köra systemet. De delar **inte** databas med varan
 
 ## Changelog
 
+### Prisbadge klipps inte på smala mobiler (2026-07-19)
+- Vid ~320px (iPhone SE) klipptes prisbadgen av kortkanten när flottans långa modellnamn
+  ("Volkswagen e-Transporter Kombi L2 160 kW 64 kWh") inte fick plats. Bilnamnet krymper
+  och radbryts nu i stället (`.car-info` min-width 0 + overflow-wrap), prisbadgen kan
+  aldrig krympa (flex-shrink 0), och badge-remsan smalnas av under 360px
+- Det tidigare rapporterade "klippet vid 390px" visade sig vara en artefakt i headless
+  Edge-skärmdumpar (viewporten renderas ~100px bredare än `--window-size` så bilden
+  beskärs till höger) — riktiga 390px-layouten var redan hel. Verifierat vid 320 och
+  390px med iframe-harness och riktiga flottnamn
+
 ### Unika modellnamn i flottan (2026-07-18)
 - EV-listan har två varianter med visningsnamnet "Rolls-Royce Spectre Series II" → flottan
   fick två identiska bilar. `selectSpread` dedupar nu på modellnamn, och boten städar bort
