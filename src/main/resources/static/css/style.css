@@ -354,8 +354,8 @@ body {
     border-radius: 4px;
 }
 
-.car-info     { flex: 1; padding: 10px 12px; }
-.car-name     { font-weight: 600; font-size: 13px; color: var(--text); }
+.car-info     { flex: 1; padding: 10px 12px; min-width: 0; }
+.car-name     { font-weight: 600; font-size: 13px; color: var(--text); overflow-wrap: anywhere; }
 .car-detail   { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
 .car-availability {
     font-size: 10px;
@@ -379,6 +379,8 @@ body {
     white-space: nowrap;
     align-self: center;
     border: 1px solid rgba(99,179,237,0.3);
+    /* Priset får aldrig klippas — bilnamnet (min-width: 0 + overflow-wrap) krymper i stället */
+    flex-shrink: 0;
 }
 
 /* ── Right panel ───────────────────────────────────────────── */
@@ -762,4 +764,9 @@ body {
     .bookings-card { min-height: unset; }
     .table-wrapper { overflow-x: auto; }
     .header-stats { display: none; }
+}
+
+@media (max-width: 360px) {
+    .car-badge-strip { width: 64px; min-width: 64px; }
+    .car-price-badge { margin: auto 8px auto 4px; padding: 4px 8px; }
 }
