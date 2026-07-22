@@ -32,7 +32,13 @@ public class SecurityConfig {
             )
             .formLogin(form -> form
                 .loginPage("/login")
-                .defaultSuccessUrl("/", true)
+                // Admins skickas till "/?welcome=1" som triggar hype-bootskärmen på dashboarden;
+                // vanliga användare går rakt in.
+                .successHandler((request, response, authentication) -> {
+                    boolean admin = authentication.getAuthorities().stream()
+                        .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
+                    response.sendRedirect(request.getContextPath() + (admin ? "/?welcome=1" : "/"));
+                })
                 .permitAll()
             )
             .logout(logout -> logout
