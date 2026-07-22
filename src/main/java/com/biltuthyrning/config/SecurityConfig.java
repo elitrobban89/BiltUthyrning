@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -46,9 +47,12 @@ public class SecurityConfig {
                 .addLogoutHandler((request, response, authentication) -> bookingService.deleteAllBookings())
                 .logoutSuccessUrl("/login?logout")
             )
-            // /logout undantas: efter en omdeploy är sessionens CSRF-token död och
-            // utloggnings-POST:en gav 403 Whitelabel i stället för att logga ut
+            // CSRF-token lagras i en cookie i stället för serversessionen, så den överlever
+            // omdeployer och idle-spindown på Render free tier. Tidigare dog sessionens token
+            // vid omstart och en redan öppen login-/logout-sida fick 403. /logout behålls
+            // undantaget (utloggnings-triggern skickar inte alltid token); /api/** är ren JSON.
             .csrf(csrf -> csrf
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 .ignoringRequestMatchers("/api/**", "/logout")
             )
             .headers(headers -> headers
