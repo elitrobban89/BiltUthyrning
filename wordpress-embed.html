@@ -1,25 +1,67 @@
 <!--
-  Klistra in detta i ett Custom HTML-block på WordPress-sidan /biluthyrning/
-  Visar en spinner medan Render-appen startar (cold-start ~30s på free-tier).
+  Klistra in detta i ett Custom HTML-block på WordPress-sidan /biluthyrning/.
+  Ersätter den gamla iframe-inbäddningen: appen öppnas nu i egen flik i stället.
+  Anledning: i en cross-site-iframe blockerar iPhone/Safari tredjeparts-cookies, så
+  login gav 403 på mobil. Som egen toppnivå-sida blir cookies förstaparts → funkar
+  på alla enheter (iPhone, Android, PC). Ingen <script> behövs (WP blockerar inline-JS).
 -->
 <style>
-  .wp-block-html { padding: 0 !important; margin: 0 !important; max-width: 100% !important; }
-  #loading-overlay {
-    display: flex; align-items: center; justify-content: center;
-    height: 150vh; background: #F0F4F8;
-    font-family: Inter, sans-serif; font-size: 16px; color: #2B6CB0; gap: 12px;
+  .bu-cta-wrap { max-width: 560px; margin: 24px auto; padding: 0 14px;
+    font-family: 'Space Grotesk', 'Segoe UI', system-ui, -apple-system, sans-serif; }
+  .bu-cta {
+    position: relative; overflow: hidden; border-radius: 22px; padding: 38px 30px 34px;
+    text-align: center; color: #eaf1ff;
+    background:
+      radial-gradient(120% 80% at 15% 0%, rgba(56,132,255,.28), transparent 60%),
+      radial-gradient(120% 90% at 90% 100%, rgba(124,58,237,.28), transparent 58%),
+      linear-gradient(160deg, #111a30, #0a1120);
+    border: 1px solid rgba(120,160,255,.22);
+    box-shadow: 0 24px 60px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.08);
   }
-  #loading-overlay::before {
-    content: ''; width: 24px; height: 24px; border: 3px solid #BEE3F8;
-    border-top-color: #2B6CB0; border-radius: 50%; animation: spin 0.8s linear infinite;
+  .bu-cta::before {
+    content: ''; position: absolute; inset: -40% -10% auto -10%; height: 70%;
+    background: radial-gradient(ellipse at 50% 0%, rgba(56,132,255,.22), transparent 70%);
+    pointer-events: none; animation: bu-glow 6s ease-in-out infinite alternate;
   }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  #biluthyrning-frame { display: none; width: 100%; height: 150vh; border: none; }
+  @keyframes bu-glow { from { opacity: .6; } to { opacity: 1; } }
+  .bu-cta-ic {
+    width: 66px; height: 66px; margin: 0 auto 16px; border-radius: 20px;
+    display: flex; align-items: center; justify-content: center; font-size: 32px;
+    background: linear-gradient(145deg, #1c2a4a, #16213c);
+    border: 1px solid rgba(120,160,255,.3);
+    box-shadow: 0 8px 26px rgba(37,99,235,.4), inset 0 1px 0 rgba(255,255,255,.15);
+  }
+  .bu-cta h2 { margin: 0 0 6px; font-size: 1.7rem; font-weight: 800; letter-spacing: -.02em;
+    background: linear-gradient(120deg, #fff 40%, #9dc0ff 100%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .bu-cta p { margin: 0 0 22px; font-size: .96rem; line-height: 1.5; color: rgba(206,222,255,.72); }
+  .bu-cta-btn {
+    display: inline-flex; align-items: center; gap: 9px; position: relative; z-index: 1;
+    padding: 14px 30px; border-radius: 14px; text-decoration: none;
+    font-size: 1.02rem; font-weight: 700; color: #fff;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    box-shadow: 0 10px 30px rgba(37,99,235,.5), inset 0 1px 0 rgba(255,255,255,.25);
+    transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+  }
+  .bu-cta-btn:hover { transform: translateY(-2px); filter: brightness(1.08);
+    box-shadow: 0 14px 38px rgba(37,99,235,.62), inset 0 1px 0 rgba(255,255,255,.3); }
+  .bu-cta-btn:active { transform: translateY(0); }
+  .bu-cta-btn .arw { transition: transform .15s ease; }
+  .bu-cta-btn:hover .arw { transform: translateX(4px); }
+  .bu-cta-note { margin: 16px 0 0; font-size: .78rem; color: rgba(160,185,230,.6); }
+  @media (max-width: 520px) {
+    .bu-cta { padding: 32px 20px 28px; border-radius: 18px; }
+    .bu-cta h2 { font-size: 1.45rem; }
+  }
 </style>
-<div id="loading-overlay">Laddar biluthyrning…</div>
-<iframe
-  id="biluthyrning-frame"
-  src="https://biltuthyrning.onrender.com"
-  onload="this.style.display='block'; document.getElementById('loading-overlay').style.display='none';"
-  title="Biluthyrning">
-</iframe>
+<div class="bu-cta-wrap">
+  <div class="bu-cta">
+    <div class="bu-cta-ic">🚗</div>
+    <h2>Biluthyrning</h2>
+    <p>Boka bil enkelt och smidigt. Logga in för att se flottan, priser och göra din bokning.</p>
+    <a class="bu-cta-btn" href="https://biltuthyrning.onrender.com" target="_blank" rel="noopener">
+      Öppna biluthyrning <span class="arw">→</span>
+    </a>
+    <p class="bu-cta-note">Öppnas i en ny flik · första laddningen kan ta ~30&nbsp;sek (gratis-server startar upp)</p>
+  </div>
+</div>
