@@ -2,6 +2,7 @@ package com.biltuthyrning.config;
 
 import com.biltuthyrning.service.BookingService;
 import com.biltuthyrning.service.UserService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,6 +19,15 @@ public class SecurityConfig {
 
     private final UserService userService;
     private final BookingService bookingService;
+
+    // I prod (application-prod.properties) sätts dessa till None/true så CSRF-cookien
+    // följer med i WordPress-iframen (cross-site). Lokalt över http gäller defaulten
+    // Lax/false, annars vägrar webbläsaren skicka en Secure-cookie över http.
+    @Value("${app.csrf-cookie.same-site:Lax}")
+    private String csrfCookieSameSite;
+
+    @Value("${app.csrf-cookie.secure:false}")
+    private boolean csrfCookieSecure;
 
     public SecurityConfig(UserService userService, BookingService bookingService) {
         this.userService = userService;
@@ -51,14 +61,24 @@ public class SecurityConfig {
             // omdeployer och idle-spindown på Render free tier. Tidigare dog sessionens token
             // vid omstart och en redan öppen login-/logout-sida fick 403. /logout behålls
             // undantaget (utloggnings-triggern skickar inte alltid token); /api/** är ren JSON.
+            // I prod sätts SameSite=None + Secure så cookien följer med när sidan körs i en
+            // cross-site-iframe på WordPress; annars blockeras den (Lax) och POST /login får 403.
             .csrf(csrf -> csrf
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .csrfTokenRepository(csrfCookieRepository())
                 .ignoringRequestMatchers("/api/**", "/logout")
             )
             .headers(headers -> headers
                 .frameOptions(frameOptions -> frameOptions.disable())
             );
         return http.build();
+    }
+
+    private CookieCsrfTokenRepository csrfCookieRepository() {
+        CookieCsrfTokenRepository repo = CookieCsrfTokenRepository.withHttpOnlyFalse();
+        repo.setCookieCustomizer(cookie -> cookie
+            .sameSite(csrfCookieSameSite)
+            .secure(csrfCookieSecure));
+        return repo;
     }
 
     @Bean
