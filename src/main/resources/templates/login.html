@@ -64,8 +64,33 @@
             </form>
         </div>
     </div>
+
+    <!-- Post it-lapp med demokontot. Systemet har ETT konto som alla kör på, och utan den
+         här lappen stod besökaren framför en inloggning utan att veta vad hen skulle skriva.
+         Klick fyller i fälten — snabbare än att skriva av, och omöjligt att stava fel. -->
+    <div class="bu-postit" id="bu-postit" role="button" tabindex="0"
+         onclick="fyllDemo()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();fyllDemo();}">
+        <div class="bu-postit-tejp" aria-hidden="true"></div>
+        <div class="bu-postit-rubrik">Demo-inlogg</div>
+        <div class="bu-postit-rad"><span>Användare:</span><b>admin</b></div>
+        <div class="bu-postit-rad"><span>Lösenord:</span><b>admin123</b></div>
+        <div class="bu-postit-hint" id="bu-postit-hint">klicka på lappen så fylls rutorna i</div>
+    </div>
 </div>
 <script>
+function fyllDemo() {
+    showTab('login');
+    var form = document.querySelector('#login-tab form');
+    if (!form) return;
+    form.querySelector('input[name="username"]').value = 'admin';
+    form.querySelector('input[name="password"]').value = 'admin123';
+    var hint = document.getElementById('bu-postit-hint');
+    if (hint) hint.textContent = '✓ ifyllt — tryck Logga in';
+    document.getElementById('bu-postit').classList.add('ifylld');
+    var knapp = form.querySelector('button[type="submit"]');
+    if (knapp) knapp.focus();
+}
+
 function showTab(tab) {
     document.getElementById('login-tab').style.display    = tab === 'login'    ? '' : 'none';
     document.getElementById('register-tab').style.display = tab === 'register' ? '' : 'none';

@@ -206,7 +206,7 @@ Flottan består av två delar:
 
 ## Tester & CI
 
-67 tester i tre lager — ren logik, HTTP-felvägar mot lokal stubbserver och controller-lagret (MockMvc, tjänsterna mockas):
+69 tester i tre lager — ren logik, HTTP-felvägar mot lokal stubbserver och controller-lagret (MockMvc, tjänsterna mockas):
 
 | Testklass | Täcker |
 |---|---|
@@ -217,7 +217,7 @@ Flottan består av två delar:
 | `WebControllerTest` (5) | MockMvc: dashboardens statistik (avbokade exkluderas ur intäkt), health, boknings-flash (lyckad + uppbokad), registrering |
 | `BookingControllerTest` (3) | MockMvc: batch-tillgänglighet som JSON-karta, per-bil-tillgänglighet, bokningslistan |
 | `FleetSyncServiceHttpTest` (3) | HTTP-felvägar mot lokal stubbserver: lyckad hämtning, 500 → tom lista utan exception, limit 0 anropar aldrig nätet |
-| `CarUtilsTest` (3) | EV/PHEV-badge styrs av motorfält (Lexus-fällan), fem drivmedelstyper, deterministisk färgpalett |
+| `CarUtilsTest` (5) | EV/PHEV-badge styrs av motorfält (Lexus-fällan), fem drivmedelstyper, deterministisk färgpalett, märkesemblem (diakriter, MG4/MG5, märken utan fritt emblem) |
 | `CarControllerTest` (2) | MockMvc: flottan som JSON med förbrukning i motorfältet, enskild bil |
 
 GitHub Actions ([maven.yml](.github/workflows/maven.yml)) kör testerna på varje push — badgen överst visar status.

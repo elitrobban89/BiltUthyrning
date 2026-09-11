@@ -28,6 +28,35 @@ class CarUtilsTest {
     }
 
     @Test
+    void emblemHittasOavsettStavning() {
+        assertThat(utils.getEmblem("Volvo XC40")).isEqualTo("volvo");
+        // diakriter: flottan skriver Škoda och Citroën, filnamnen gör det inte
+        assertThat(utils.getEmblem("Škoda Enyaq iV 80")).isEqualTo("skoda");
+        assertThat(utils.getEmblem("Citroën ë-C4")).isEqualTo("citroen");
+        // samma märke, två stavningar i datan
+        assertThat(utils.getEmblem("Mercedes-Benz EQE")).isEqualTo("mercedes");
+        assertThat(utils.getEmblem("Mercedes EQB")).isEqualTo("mercedes");
+        // märke och modell i samma ord
+        assertThat(utils.getEmblem("MG4 Standard")).isEqualTo("mg");
+        assertThat(utils.getEmblem("MG5 Long Range")).isEqualTo("mg");
+        assertThat(utils.getEmblem("MG ZS EV")).isEqualTo("mg");
+        // märket skrivet både med och utan bindestreck
+        assertThat(utils.getEmblem("Rolls-Royce Spectre")).isEqualTo("rollsroyce");
+        assertThat(utils.getEmblem("Rolls Royce Spectre")).isEqualTo("rollsroyce");
+    }
+
+    @Test
+    void markeUtanFrittEmblemFallerTillbakaPaEmoji() {
+        // Tomt = mallen ritar bil-emojin. Ett FEL emblem vore sämre än inget, och de här
+        // märkena saknar en fri och läsbar symbol — se kommentaren i CarUtils.
+        assertThat(utils.getEmblem("Hyundai Ioniq 5")).isEmpty();
+        assertThat(utils.getEmblem("Peugeot e-208")).isEmpty();
+        assertThat(utils.getEmblem("XPENG G6")).isEmpty();
+        assertThat(utils.getEmblem("")).isEmpty();
+        assertThat(utils.getEmblem(null)).isEmpty();
+    }
+
+    @Test
     void badgeFargArDeterministiskForNyaMarken() {
         assertThat(utils.getBadgeColor("Tesla Model 3"))
                 .isEqualTo(utils.getBadgeColor("Tesla Model 3"))

@@ -38,7 +38,10 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/**", "/css/**", "/js/**", "/login", "/register", "/error", "/health").permitAll()
+                // /emblem/** är bilkortens märkeslogotyper — statiska filer i samma klass som
+                // /css och /js. Utan raden svarar de 302 till inloggningen, och en <img> som
+                // fått en HTML-sida i stället för SVG ritas inte ut.
+                .requestMatchers("/api/**", "/css/**", "/js/**", "/emblem/**", "/login", "/register", "/error", "/health").permitAll()
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form

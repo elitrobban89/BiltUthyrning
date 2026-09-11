@@ -147,9 +147,16 @@
                  onclick="selectCar(this)">
 
                 <div class="car-badge-strip"
-                     th:style="'background-color:' + ${@carUtils.getBadgeColor(car.model)}">
+                     th:style="'background-color:' + ${@carUtils.getBadgeColor(car.model)}"
+                     th:with="emblem=${@carUtils.getEmblem(car.model)}">
                     <span class="car-ev-badge" th:text="${@carUtils.getEVBadge(car.engine)}"></span>
-                    <span class="car-icon">🚗</span>
+                    <!-- Riktigt märkesemblem när vi har ett, annars bil-emojin som förr.
+                         Plattan är VIT med flit: emblemen är ritade för ljus botten och
+                         försvinner nästan helt direkt mot den färgade remsan. -->
+                    <span th:if="${emblem != ''}" class="car-emblem">
+                        <img th:src="@{'/emblem/' + ${emblem} + '.svg'}" th:alt="${car.model}" loading="lazy"/>
+                    </span>
+                    <span th:unless="${emblem != ''}" class="car-icon">🚗</span>
                 </div>
 
                 <div class="car-info">

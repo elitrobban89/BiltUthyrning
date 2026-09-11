@@ -345,6 +345,26 @@ body {
     padding: 10px 0;
 }
 .car-icon     { font-size: 24px; }
+
+/* Märkesemblem på den färgade remsan. Vit platta — emblemen är ritade för ljus botten
+   (Mercedes-stjärnan, VW-ringen och Fords mörkblå oval är nästan osynliga direkt mot
+   remsans färg), och samma val som elbilsappens märkesväljare gör. */
+.car-emblem {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    background: #fff;
+    border: 1px solid rgba(255,255,255,0.6);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.22);
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.22s;
+}
+.car-emblem img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.car-card:hover .car-emblem { transform: scale(1.07); }
+
 .car-ev-badge {
     font-size: 9px;
     font-weight: 700;
@@ -769,4 +789,79 @@ body {
 @media (max-width: 360px) {
     .car-badge-strip { width: 64px; min-width: 64px; }
     .car-price-badge { margin: auto 8px auto 4px; padding: 4px 8px; }
+}
+
+/* ── Post it-lapp med demokontot (inloggningssidan) ─────────────────────────
+   Systemet körs på ETT konto. Lappen står klistrad bredvid kortet på stor skärm och
+   under det på liten, och ett klick fyller i fälten. */
+.auth-container { position: relative; }
+
+.bu-postit {
+    width: 212px;
+    margin: 26px auto 0;
+    padding: 18px 18px 14px;
+    border-radius: 2px 2px 3px 3px;
+    cursor: pointer;
+    color: #4a3a10;
+    background: linear-gradient(170deg, #fef3a3 0%, #fde96f 62%, #f8dd55 100%);
+    box-shadow: 0 12px 26px rgba(0,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.5);
+    transform: rotate(-3deg);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    font-family: 'Segoe Script', 'Bradley Hand', 'Comic Sans MS', 'Chalkboard SE', cursive;
+    animation: fadeUp 0.5s 0.25s ease both;
+}
+.bu-postit:hover,
+.bu-postit:focus-visible { transform: rotate(-1deg) scale(1.03); box-shadow: 0 16px 32px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.5); outline: none; }
+.bu-postit.ifylld { transform: rotate(-1deg); }
+
+/* Tejpbiten sitter i lappens ÖVERKANT och rör aldrig texten — en absolut yta över
+   texten tvättar ur den (samma fälla som glasglöden på elbilskorten). */
+.bu-postit-tejp {
+    position: absolute;
+    top: -11px; left: 50%;
+    width: 74px; height: 22px;
+    transform: translateX(-50%) rotate(-2deg);
+    background: rgba(255,255,255,0.42);
+    border-left: 1px solid rgba(255,255,255,0.55);
+    border-right: 1px solid rgba(255,255,255,0.55);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.18);
+}
+.bu-postit { position: relative; }
+.bu-postit-rubrik {
+    font-size: 17px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 10px;
+    color: #3d2f08;
+    text-decoration: underline;
+    text-decoration-color: rgba(61,47,8,0.35);
+    text-underline-offset: 3px;
+}
+.bu-postit-rad {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 14px;
+    line-height: 1.9;
+}
+.bu-postit-rad b { font-weight: 700; color: #1f1a05; letter-spacing: 0.3px; }
+.bu-postit-hint {
+    margin-top: 10px;
+    font-size: 11.5px;
+    text-align: center;
+    color: rgba(61,47,8,0.7);
+}
+
+/* Stor skärm: lappen klistras till höger om kortet i stället för under det. */
+@media (min-width: 1040px) {
+    .bu-postit {
+        position: absolute;
+        top: 34px;
+        left: 100%;
+        margin: 0 0 0 10px;
+        transform: rotate(4deg);
+    }
+    .bu-postit:hover,
+    .bu-postit:focus-visible { transform: rotate(2deg) scale(1.03); }
+    .bu-postit.ifylld { transform: rotate(2deg); }
 }

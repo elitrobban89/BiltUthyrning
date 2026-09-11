@@ -65,3 +65,12 @@
     <p class="bu-cta-note">Öppnas i en ny flik · första laddningen kan ta ~30&nbsp;sek (gratis-server startar upp)</p>
   </div>
 </div>
+
+<!--
+  Rullar ned till kortet ovan när sidan laddats, så att besökaren landar i appen i stället för
+  i säljtexten. EXTERN fil därför att WordPress blockerar inline-<script>, och serverad av
+  CarAdvice därför att den tjänsten ligger på betald plan och alltid är vaken. Skriptet rör
+  inget annat på sidan och avstår om besökaren själv redan rullat eller kommit via en
+  djuplänk (#). Källan: CarAdvice src/main/resources/static/biluthyrning-landning.js
+-->
+<script src="https://caradvice.onrender.com/biluthyrning-landning.js" defer></script>
