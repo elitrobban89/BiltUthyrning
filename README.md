@@ -19,7 +19,7 @@ Det finns **två sätt** att köra systemet. De delar **inte** databas med varan
 
 ### 🖥️ JavaFX-appen (lokal desktop)
 - **Databas:** SQLite — filen `biltuthyrning.db` på din lokala dator
-- **Starta:** Kör `run.bat` (eller `mvn javafx:run`). Kräver Java 17+ och Maven — JavaFX hanteras automatiskt av Maven.
+- **Starta:** Kör `run.bat` (eller `mvn javafx:run`). Kräver Java 25 och Maven — JavaFX hanteras automatiskt av Maven.
 - Inloggning: **admin** / **admin123**
 
 ---
@@ -187,8 +187,8 @@ Flottan består av två delar:
 | Bygge | `mvn javafx:run` / `run.bat` | Docker, `-P web` |
 | Profil | *(standard)* | `prod` |
 
-- **Java 17** / **JavaFX 21**
-- **Spring Boot 3.2.5** (Web, Data JPA, Security, Thymeleaf)
+- **Java 25** / **JavaFX 21**
+- **Spring Boot 3.5.16** (Web, Data JPA, Security, Thymeleaf)
 - **Maven** för bygge och beroenden
 
 ## REST API
