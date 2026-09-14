@@ -185,6 +185,7 @@ Flottan består av två delar:
 |---|---|---|
 | Databas | SQLite (`biltuthyrning.db`) | PostgreSQL (moln) |
 | Bygge | `mvn javafx:run` / `run.bat` | Docker, `-P web` |
+| Java | Java 25 + JavaFX 21 | Java 25 |
 | Profil | *(standard)* | `prod` |
 
 - **Java 25** / **JavaFX 21**
