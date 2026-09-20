@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+/** @author Robert Andersson Kopler */
 @Entity
 @Table(name = "bookings")
 public class Booking {

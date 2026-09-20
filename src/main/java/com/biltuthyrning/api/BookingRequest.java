@@ -2,6 +2,7 @@ package com.biltuthyrning.api;
 
 import java.time.LocalDate;
 
+/** @author Robert Andersson Kopler */
 public class BookingRequest {
     private Long carId;
     private String customerName;

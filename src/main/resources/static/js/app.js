@@ -1,3 +1,4 @@
+/* BilUthyrning — (c) 2026 Robert Andersson Kopler. Alla rattigheter forbehallna. */
 /* ── State ── */
 let selectedCarId    = null;
 let selectedDailyRate = null;

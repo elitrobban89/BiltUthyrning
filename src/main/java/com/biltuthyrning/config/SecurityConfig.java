@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
+/** @author Robert Andersson Kopler */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {

@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+/** @author Robert Andersson Kopler */
 public class CarRentalGUI extends Application {
 
     // ── Palette ──────────────────────────────────────────────────────────────

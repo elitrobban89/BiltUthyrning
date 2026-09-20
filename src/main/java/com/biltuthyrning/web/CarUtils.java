@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+/** @author Robert Andersson Kopler */
 @Component("carUtils")
 public class CarUtils {
 

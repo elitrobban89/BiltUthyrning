@@ -9,6 +9,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+/** @author Robert Andersson Kopler */
 class FleetSyncServiceTest {
 
     private final FleetSyncService service = new FleetSyncService();

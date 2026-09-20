@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/** @author Robert Andersson Kopler */
 @RestController
 @RequestMapping("/api/cars")
 public class CarController {

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
 
+/** @author Robert Andersson Kopler */
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     

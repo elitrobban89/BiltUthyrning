@@ -15,6 +15,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /** HTTP-felvägar mot lokal stubbserver — samma mönster som systerprojektens HTTP-tester. */
+/** @author Robert Andersson Kopler */
 class FleetSyncServiceHttpTest {
 
     private static HttpServer server;

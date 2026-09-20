@@ -24,6 +24,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * är alltså tom i början av varje test.
  *
  * Befintlig bokning i alla tester: XC40, 5–10 juli (CONFIRMED).
+ *
+ * @author Robert Andersson Kopler
  */
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)

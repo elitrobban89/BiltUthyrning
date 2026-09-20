@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Profile;
 
 import javax.sql.DataSource;
 
+/** @author Robert Andersson Kopler */
 @Configuration
 @Profile("prod")
 public class DataSourceConfig {

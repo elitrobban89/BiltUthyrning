@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/** @author Robert Andersson Kopler */
 @Configuration
 public class DataInitializer {
 

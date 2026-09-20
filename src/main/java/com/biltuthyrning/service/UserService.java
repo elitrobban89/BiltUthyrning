@@ -9,6 +9,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 
+/** @author Robert Andersson Kopler */
 @Service
 public class UserService {
 

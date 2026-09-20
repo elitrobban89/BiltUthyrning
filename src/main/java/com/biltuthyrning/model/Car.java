@@ -3,6 +3,7 @@ package com.biltuthyrning.model;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 
+/** @author Robert Andersson Kopler */
 @Entity
 @Table(name = "cars")
 public class Car {

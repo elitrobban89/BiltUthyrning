@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 
 import java.util.Optional;
 
+/** @author Robert Andersson Kopler */
 public class LoginGUI {
 
     private static final String PRIMARY  = "#1C4E80";

@@ -28,6 +28,8 @@ import java.util.Set;
  * motorfältet och ett deterministiskt demo-dagspris baserat på drivlina
  * och märke. Fail-silent: vid nätverks-/API-fel returneras tom lista och
  * den kurerade basflottan behålls som den är.
+ *
+ * @author Robert Andersson Kopler
  */
 @Service
 public class FleetSyncService {

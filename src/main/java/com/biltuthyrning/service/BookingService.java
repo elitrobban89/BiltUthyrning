@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/** @author Robert Andersson Kopler */
 @Service
 public class BookingService {
     
