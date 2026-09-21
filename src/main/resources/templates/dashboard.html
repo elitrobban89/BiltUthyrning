@@ -140,11 +140,17 @@
         </div>
 
         <div class="car-list" id="carList">
+            <!-- Drivmedlet räknas ut i th:with och INTE inne i th:attr: Thymeleaf kör
+                 th:attr i begränsat läge där @bean-anrop är förbjudna. Samma uttryck där
+                 inne gav "Instantiation of new objects and access to static classes or
+                 parameters is forbidden" och 500 på HELA dashboarden. Det gick i Thymeleaf
+                 3.1.2 och slutade gå i 3.1.5 (Boot 3.5.16) — se DashboardRenderTest. -->
             <div th:each="car : ${cars}"
                  class="car-card"
+                 th:with="fuel=${@carUtils.getFuelType(car.engine)}"
                  th:attr="data-car-id=${car.id},
                            data-daily-rate=${car.dailyRate},
-                           data-fuel=${@carUtils.getFuelType(car.engine)}"
+                           data-fuel=${fuel}"
                  onclick="selectCar(this)">
 
                 <div class="car-badge-strip"
