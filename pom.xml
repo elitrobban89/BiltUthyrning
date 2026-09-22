@@ -21,7 +21,7 @@
     </parent>
 
     <properties>
-        <java.version>25</java.version>
+        <java.version>27</java.version>
         <javafx.version>21</javafx.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Boot 3.5 pinnar Mockito 5.17; 5.23 behövs för att mocka klasser på Java 25.
