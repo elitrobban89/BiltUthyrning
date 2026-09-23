@@ -20,7 +20,13 @@ RUN ./mvnw clean package -P web -DskipTests -q
 
 # ── Runtime stage ─────────────────────────────────────────
 FROM bellsoft/liberica-openjre-alpine:27
+# Liberica levererar INTE JDK:ns CDS-arkiv (lib/server/classes.jsa) som Temurin gjorde, sa
+# varje JDK-klass laddades kallt. Pa Renders gratis-CPU tog kontexten da 28 s och Render gav
+# upp portskanningen innan Tomcat lyssnade ("No open ports detected" -> Timed Out, 2026-09-22).
+# -Xshare:dump bygger arkivet en gang har; TieredStopAtLevel=1 (bara C1) kortar starten
+# ytterligare pa en CPU-snal instans.
+RUN java -Xshare:dump
 WORKDIR /app
 COPY --from=build /app/target/car-rental-1.0-SNAPSHOT.jar app.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar", "--spring.profiles.active=prod"]
+ENTRYPOINT ["java", "-XX:TieredStopAtLevel=1", "-jar", "app.jar", "--spring.profiles.active=prod"]
