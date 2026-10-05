@@ -190,10 +190,10 @@ Flottan består av två delar:
 |---|---|---|
 | Databas | SQLite (`biltuthyrning.db`) | PostgreSQL (moln) |
 | Bygge | `mvn javafx:run` / `run.bat` | Docker, `-P web` |
-| Java | Java 27 + JavaFX 21 | Java 27 |
+| Java | Java 27 + JavaFX 27 | Java 27 |
 | Profil | *(standard)* | `prod` |
 
-- **Java 27** / **JavaFX 21**
+- **Java 27** / **JavaFX 27**
 - **Spring Boot 4.1.1** (Web, Data JPA, Security, Thymeleaf)
 - **Maven** för bygge och beroenden
 
