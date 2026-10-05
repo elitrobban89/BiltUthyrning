@@ -1,8 +1,8 @@
 package com.biltuthyrning.service;
 
 import com.biltuthyrning.model.Car;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -89,7 +89,7 @@ public class FleetSyncService {
     List<Car> parseEv(String json) throws Exception {
         List<Car> cars = new ArrayList<>();
         for (JsonNode n : mapper.readTree(json)) {
-            String name = n.path("carName").asText("").trim();
+            String name = n.path("carName").asString("").trim();
             double kwh = n.path("kwhPerMil").asDouble(0);
             if (name.isBlank() || kwh <= 0) continue;
             cars.add(Car.builder()
@@ -105,8 +105,8 @@ public class FleetSyncService {
     List<Car> parseIce(String json) throws Exception {
         List<Car> cars = new ArrayList<>();
         for (JsonNode n : mapper.readTree(json)) {
-            String name = n.path("carName").asText("").trim();
-            String fuel = n.path("fuel").asText("").trim().toLowerCase(Locale.ROOT);
+            String name = n.path("carName").asString("").trim();
+            String fuel = n.path("fuel").asString("").trim().toLowerCase(Locale.ROOT);
             double liter = n.path("literPerMil").asDouble(0);
             if (name.isBlank() || fuel.isBlank() || liter <= 0) continue;
             String label = Character.toUpperCase(fuel.charAt(0)) + fuel.substring(1);

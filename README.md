@@ -194,7 +194,7 @@ Flottan består av två delar:
 | Profil | *(standard)* | `prod` |
 
 - **Java 27** / **JavaFX 21**
-- **Spring Boot 3.5.16** (Web, Data JPA, Security, Thymeleaf)
+- **Spring Boot 4.1.1** (Web, Data JPA, Security, Thymeleaf)
 - **Maven** för bygge och beroenden
 
 ## REST API

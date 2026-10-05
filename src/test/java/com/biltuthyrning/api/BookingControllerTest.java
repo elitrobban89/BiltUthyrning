@@ -3,10 +3,9 @@ package com.biltuthyrning.api;
 import com.biltuthyrning.model.Booking;
 import com.biltuthyrning.model.Car;
 import com.biltuthyrning.service.BookingService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -32,9 +31,8 @@ class BookingControllerTest {
     @BeforeEach
     void setUp() {
         bookingService = mock(BookingService.class);
-        ObjectMapper mapper = new ObjectMapper().findAndRegisterModules();
         mvc = MockMvcBuilders.standaloneSetup(new BookingController(bookingService))
-                .setMessageConverters(new MappingJackson2HttpMessageConverter(mapper))
+                .setMessageConverters(new JacksonJsonHttpMessageConverter())
                 .build();
     }
 
