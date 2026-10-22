@@ -110,7 +110,7 @@ Det finns **två sätt** att köra systemet. De delar **inte** databas med varan
 
 ### UX-förbättringar & bokningshantering (2026-06-04)
 - Tillgänglighetsbadge per bil i listan — visar "Ledig" (grön) eller "Uppbokad" (röd) baserat på valda datum, uppdateras live
-- Live tillgänglighets- och prisindikator i bokningsformuläret — "Uppbokad"-bilen låser bekräfta-knappen automatiskt
+- Live tillgänglighets- och prisindikator i bokningsformuläret — en uppbokad bil markeras direkt, och en dubbelbokning stoppas i `BookingService`
 - Datumvalidering i realtid — röd varningstext visas direkt om slutdatum är före startdatum
 - Statusfilter på bokningstabell — dropdown: Alla / Bekräftade / Avbokade / Avslutade
 - Ny "Markera som klar"-knapp (grön) — sätter bokning till `COMPLETED`
@@ -212,7 +212,7 @@ Flottan består av två delar:
 
 ## Tester & CI
 
-69 tester i tre lager — ren logik, HTTP-felvägar mot lokal stubbserver och controller-lagret (MockMvc, tjänsterna mockas):
+72 tester i fyra lager — ren logik, integrationstester mot SQLite in-memory, HTTP-felvägar mot lokal stubbserver och controller-lagret (MockMvc, tjänsterna mockas, plus en riktig Thymeleaf-rendering):
 
 | Testklass | Täcker |
 |---|---|
@@ -221,6 +221,7 @@ Flottan består av två delar:
 | `UserServiceTest` (10) | Registrering, lösenordshashning, valideringar |
 | `FleetSyncServiceTest` (9) | Delade flottan: JSON-parsning av EV/ICE-listor, svensk decimalformatering, deterministisk prisheuristik med premium- och ultralyxpåslag, drivlina ur motorfältet, märkesspridning, namn-dedup och limit |
 | `WebControllerTest` (5) | MockMvc: dashboardens statistik (avbokade exkluderas ur intäkt), health, boknings-flash (lyckad + uppbokad), registrering |
+| `DashboardRenderTest` (3) | **Mallen renderas på riktigt** (2026-09-21) — startsidan svarade 500 i drift efter Boot-uppgraderingen, eftersom Thymeleaf 3.1.5 förbjuder `@bean`-anrop i `th:attr`. `WebControllerTest` stannar vid vynamnet och såg det aldrig, så det här provet laddar en riktig webbkontext med Thymeleaf och läser HTML:en: sidan renderas utan fel, bilkortet bär sina data-attribut, och bootskärmen ritas bara med `?welcome=1` |
 | `BookingControllerTest` (3) | MockMvc: batch-tillgänglighet som JSON-karta, per-bil-tillgänglighet, bokningslistan |
 | `FleetSyncServiceHttpTest` (3) | HTTP-felvägar mot lokal stubbserver: lyckad hämtning, 500 → tom lista utan exception, limit 0 anropar aldrig nätet |
 | `CarUtilsTest` (5) | EV/PHEV-badge styrs av motorfält (Lexus-fällan), fem drivmedelstyper, deterministisk färgpalett, märkesemblem (diakriter, MG4/MG5, märken utan fritt emblem) |
