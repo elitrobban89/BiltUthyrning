@@ -16,13 +16,13 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.1.1</version>
+        <version>4.1.2</version>
         <relativePath/>
     </parent>
 
     <properties>
         <java.version>27</java.version>
-        <javafx.version>27</javafx.version>
+        <javafx.version>27.0.1</javafx.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -77,7 +77,7 @@
         <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
-            <version>3.53.4.0</version>
+            <version>3.54.1.0</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate.orm</groupId>
